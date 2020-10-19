@@ -238,7 +238,7 @@ namespace GraphWinForms
             var vertex = GetVertexOnClick(xPos, yPos);
             if (vertex != null)
             {
-                if (!IsVertexClicked(newX, newY)) vertex.SetCoordinates(newX, newY);
+                if (!IsVertexClicked(newX, newY, DefaultSettings.VertexRadiusExpansion)) vertex.SetCoordinates(newX, newY);
                 if (!IsVertexExist(newName)) vertex.SetName(newName);
                 vertex.SetRadius(newRadius);
                 RedrawSheet();
@@ -248,7 +248,7 @@ namespace GraphWinForms
         {
             if (vertex != null)
             {
-                if (!IsVertexClicked(newX, newY)) vertex.SetCoordinates(newX, newY);
+                if (!IsVertexClicked(newX, newY, DefaultSettings.VertexRadiusExpansion)) vertex.SetCoordinates(newX, newY);
                 if (!IsVertexExist(newName)) vertex.SetName(newName);
                 vertex.SetRadius(newRadius);
                 RedrawSheet();
