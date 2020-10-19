@@ -75,7 +75,31 @@ namespace GraphWinForms
             }
             if (e.Button == MouseButtons.Right)
             {
-                
+                switch (DrawTool.CurrentTool)
+                {
+                    case (int)Tools.Cursor:
+                        {
+                            var vertex = DrawGraph.GetVertexOnClick(e.X, e.Y, DefaultSettings.VertexRadiusExpansion);
+                            MessageBox.Show(vertex == null ? "No vertex clicked" : vertex.Name);
+                            break;
+                        }
+                    case (int)Tools.Vertex:
+                        {
+                            break;
+                        }
+                    case (int)Tools.Edge:
+                        {
+                            break;
+                        }
+                    case (int)Tools.Edit:
+                        {
+                            break;
+                        }
+                    case (int)Tools.Delete:
+                        {
+                            break;
+                        }
+                }
             }
         }
 

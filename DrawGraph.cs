@@ -93,7 +93,7 @@ namespace GraphWinForms
     static public class DefaultSettings
     {
         public const int VertexRadius = 20;
-        public const int VertexRadiusExpansion = 30;
+        public const int VertexRadiusExpansion = 100;
         public const int LabelWidthModifier = 5;
         public const int LabelHeightModifier = 2;
         public static Font Font { get; private set; } = new Font("Consolas", 9);
@@ -198,17 +198,17 @@ namespace GraphWinForms
             foreach (var vertex in Vertices)
             {
                 if (Math.Pow(xPos - vertex.X, 2) + Math.Pow(yPos - vertex.Y, 2) <=
-                    Math.Pow(DefaultSettings.VertexRadius + vertexRadiusExpansion, 2))
+                    Math.Pow(vertex.Radius + vertexRadiusExpansion, 2))
                     return true;
             }
             return false;
         }
-        public static Vertex GetVertexOnClick(int xPos, int yPos)
+        public static Vertex GetVertexOnClick(int xPos, int yPos, int vertexRadiusExpansion = 0)
         {
             foreach (var vertex in Vertices)
             {
                 if (Math.Pow(xPos - vertex.X, 2) + Math.Pow(yPos - vertex.Y, 2) <=
-                    Math.Pow(DefaultSettings.VertexRadius, 2))
+                    Math.Pow(vertex.Radius + vertexRadiusExpansion, 2))
                     return vertex;
             }
             return null;
