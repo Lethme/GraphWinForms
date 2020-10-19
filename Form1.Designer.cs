@@ -29,17 +29,19 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
-            this.display = new System.Windows.Forms.PictureBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.editTool = new System.Windows.Forms.Button();
             this.clearTool = new System.Windows.Forms.Button();
+            this.deleteTool = new System.Windows.Forms.Button();
             this.edgeTool = new System.Windows.Forms.Button();
             this.vertexTool = new System.Windows.Forms.Button();
             this.cursorTool = new System.Windows.Forms.Button();
+            this.display = new System.Windows.Forms.PictureBox();
             this.panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.display)).BeginInit();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.display)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
@@ -49,15 +51,6 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(960, 520);
             this.panel1.TabIndex = 0;
-            // 
-            // display
-            // 
-            this.display.Location = new System.Drawing.Point(3, 3);
-            this.display.Name = "display";
-            this.display.Size = new System.Drawing.Size(954, 514);
-            this.display.TabIndex = 0;
-            this.display.TabStop = false;
-            this.display.MouseClick += new System.Windows.Forms.MouseEventHandler(this.display_MouseClick);
             // 
             // panel2
             // 
@@ -69,7 +62,9 @@
             // 
             // panel3
             // 
+            this.panel3.Controls.Add(this.editTool);
             this.panel3.Controls.Add(this.clearTool);
+            this.panel3.Controls.Add(this.deleteTool);
             this.panel3.Controls.Add(this.edgeTool);
             this.panel3.Controls.Add(this.vertexTool);
             this.panel3.Controls.Add(this.cursorTool);
@@ -78,22 +73,44 @@
             this.panel3.Size = new System.Drawing.Size(592, 68);
             this.panel3.TabIndex = 0;
             // 
+            // editTool
+            // 
+            this.editTool.BackgroundImage = global::GraphWinForms.Properties.Resources.edit;
+            this.editTool.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.editTool.Location = new System.Drawing.Point(299, 2);
+            this.editTool.Name = "editTool";
+            this.editTool.Size = new System.Drawing.Size(69, 65);
+            this.editTool.TabIndex = 5;
+            this.editTool.UseVisualStyleBackColor = true;
+            this.editTool.Click += new System.EventHandler(this.editTool_Click);
+            // 
             // clearTool
             // 
             this.clearTool.BackgroundImage = global::GraphWinForms.Properties.Resources.trash;
             this.clearTool.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.clearTool.Location = new System.Drawing.Point(374, 3);
+            this.clearTool.Location = new System.Drawing.Point(449, 2);
             this.clearTool.Name = "clearTool";
             this.clearTool.Size = new System.Drawing.Size(69, 65);
-            this.clearTool.TabIndex = 3;
+            this.clearTool.TabIndex = 4;
             this.clearTool.UseVisualStyleBackColor = true;
-            this.clearTool.Click += new System.EventHandler(this.clearTool_Click);
+            this.clearTool.Click += new System.EventHandler(this.clearTool_Click_1);
+            // 
+            // deleteTool
+            // 
+            this.deleteTool.BackgroundImage = global::GraphWinForms.Properties.Resources.delete;
+            this.deleteTool.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.deleteTool.Location = new System.Drawing.Point(374, 2);
+            this.deleteTool.Name = "deleteTool";
+            this.deleteTool.Size = new System.Drawing.Size(69, 65);
+            this.deleteTool.TabIndex = 3;
+            this.deleteTool.UseVisualStyleBackColor = true;
+            this.deleteTool.Click += new System.EventHandler(this.deleteTool_Click);
             // 
             // edgeTool
             // 
             this.edgeTool.BackgroundImage = global::GraphWinForms.Properties.Resources.edge;
             this.edgeTool.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.edgeTool.Location = new System.Drawing.Point(299, 3);
+            this.edgeTool.Location = new System.Drawing.Point(224, 2);
             this.edgeTool.Name = "edgeTool";
             this.edgeTool.Size = new System.Drawing.Size(69, 65);
             this.edgeTool.TabIndex = 2;
@@ -104,7 +121,7 @@
             // 
             this.vertexTool.BackgroundImage = global::GraphWinForms.Properties.Resources.vertex;
             this.vertexTool.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.vertexTool.Location = new System.Drawing.Point(224, 3);
+            this.vertexTool.Location = new System.Drawing.Point(149, 2);
             this.vertexTool.Name = "vertexTool";
             this.vertexTool.Size = new System.Drawing.Size(69, 65);
             this.vertexTool.TabIndex = 1;
@@ -115,12 +132,22 @@
             // 
             this.cursorTool.BackgroundImage = global::GraphWinForms.Properties.Resources.cursor;
             this.cursorTool.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.cursorTool.Location = new System.Drawing.Point(149, 3);
+            this.cursorTool.FlatAppearance.BorderColor = System.Drawing.Color.Black;
+            this.cursorTool.Location = new System.Drawing.Point(74, 2);
             this.cursorTool.Name = "cursorTool";
             this.cursorTool.Size = new System.Drawing.Size(69, 65);
             this.cursorTool.TabIndex = 0;
             this.cursorTool.UseVisualStyleBackColor = true;
             this.cursorTool.Click += new System.EventHandler(this.cursorTool_Click);
+            // 
+            // display
+            // 
+            this.display.Location = new System.Drawing.Point(3, 3);
+            this.display.Name = "display";
+            this.display.Size = new System.Drawing.Size(954, 514);
+            this.display.TabIndex = 0;
+            this.display.TabStop = false;
+            this.display.MouseClick += new System.Windows.Forms.MouseEventHandler(this.display_MouseClick);
             // 
             // Form1
             // 
@@ -134,9 +161,9 @@
             this.Name = "Form1";
             this.Text = "Graph";
             this.panel1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.display)).EndInit();
             this.panel2.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.display)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -147,10 +174,12 @@
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Panel panel3;
         public System.Windows.Forms.PictureBox display;
-        public System.Windows.Forms.Button clearTool;
+        public System.Windows.Forms.Button deleteTool;
         public System.Windows.Forms.Button edgeTool;
         public System.Windows.Forms.Button vertexTool;
         public System.Windows.Forms.Button cursorTool;
+        public System.Windows.Forms.Button clearTool;
+        public System.Windows.Forms.Button editTool;
     }
 }
 

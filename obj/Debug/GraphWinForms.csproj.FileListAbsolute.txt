@@ -8,3 +8,13 @@ X:\Projects\Visual Studio\C#\GraphWinForms\GraphWinForms\obj\Debug\GraphWinForms
 X:\Projects\Visual Studio\C#\GraphWinForms\GraphWinForms\obj\Debug\GraphWinForms.csproj.CoreCompileInputs.cache
 X:\Projects\Visual Studio\C#\GraphWinForms\GraphWinForms\obj\Debug\GraphWinForms.exe
 X:\Projects\Visual Studio\C#\GraphWinForms\GraphWinForms\obj\Debug\GraphWinForms.pdb
+E:\Projects\Visual Studio\C#\GraphWinForms\GraphWinForms\bin\Debug\GraphWinForms.exe.config
+E:\Projects\Visual Studio\C#\GraphWinForms\GraphWinForms\bin\Debug\GraphWinForms.exe
+E:\Projects\Visual Studio\C#\GraphWinForms\GraphWinForms\bin\Debug\GraphWinForms.pdb
+E:\Projects\Visual Studio\C#\GraphWinForms\GraphWinForms\obj\Debug\GraphWinForms.csprojAssemblyReference.cache
+E:\Projects\Visual Studio\C#\GraphWinForms\GraphWinForms\obj\Debug\GraphWinForms.Form1.resources
+E:\Projects\Visual Studio\C#\GraphWinForms\GraphWinForms\obj\Debug\GraphWinForms.Properties.Resources.resources
+E:\Projects\Visual Studio\C#\GraphWinForms\GraphWinForms\obj\Debug\GraphWinForms.csproj.GenerateResource.cache
+E:\Projects\Visual Studio\C#\GraphWinForms\GraphWinForms\obj\Debug\GraphWinForms.csproj.CoreCompileInputs.cache
+E:\Projects\Visual Studio\C#\GraphWinForms\GraphWinForms\obj\Debug\GraphWinForms.exe
+E:\Projects\Visual Studio\C#\GraphWinForms\GraphWinForms\obj\Debug\GraphWinForms.pdb

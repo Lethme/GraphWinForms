@@ -84,6 +84,8 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="resources\images\delete.png" />
+    <None Include="resources\images\edit.png" />
     <Content Include="resources\images\trash.png" />
     <Content Include="resources\images\cursor.png" />
     <Content Include="resources\images\vertex.png" />

@@ -14,7 +14,8 @@ namespace GraphWinForms
         Cursor = 0,
         Vertex = 1,
         Edge = 2,
-        Clear = 3
+        Edit = 3,
+        Delete = 4
     }
     public class Tool
     {
@@ -45,7 +46,8 @@ namespace GraphWinForms
                         FormHandler.cursorTool.Enabled = false;
                         FormHandler.vertexTool.Enabled = true;
                         FormHandler.edgeTool.Enabled = true;
-                        FormHandler.clearTool.Enabled = true;
+                        FormHandler.editTool.Enabled = true;
+                        FormHandler.deleteTool.Enabled = true;
                         break;
                     }
                 case (int)Tools.Vertex:
@@ -53,7 +55,8 @@ namespace GraphWinForms
                         FormHandler.cursorTool.Enabled = true;
                         FormHandler.vertexTool.Enabled = false;
                         FormHandler.edgeTool.Enabled = true;
-                        FormHandler.clearTool.Enabled = true;
+                        FormHandler.editTool.Enabled = true;
+                        FormHandler.deleteTool.Enabled = true;
                         break;
                     }
                 case (int)Tools.Edge:
@@ -61,15 +64,26 @@ namespace GraphWinForms
                         FormHandler.cursorTool.Enabled = true;
                         FormHandler.vertexTool.Enabled = true;
                         FormHandler.edgeTool.Enabled = false;
-                        FormHandler.clearTool.Enabled = true;
+                        FormHandler.editTool.Enabled = true;
+                        FormHandler.deleteTool.Enabled = true;
                         break;
                     }
-                case (int)Tools.Clear:
+                case (int)Tools.Edit:
                     {
                         FormHandler.cursorTool.Enabled = true;
                         FormHandler.vertexTool.Enabled = true;
                         FormHandler.edgeTool.Enabled = true;
-                        FormHandler.clearTool.Enabled = false;
+                        FormHandler.editTool.Enabled = false;
+                        FormHandler.deleteTool.Enabled = true;
+                        break;
+                    }
+                case (int)Tools.Delete:
+                    {
+                        FormHandler.cursorTool.Enabled = true;
+                        FormHandler.vertexTool.Enabled = true;
+                        FormHandler.edgeTool.Enabled = true;
+                        FormHandler.editTool.Enabled = true;
+                        FormHandler.deleteTool.Enabled = false;
                         break;
                     }
             }
@@ -80,8 +94,8 @@ namespace GraphWinForms
     {
         public const int VertexRadius = 20;
         public const int VertexRadiusExpansion = 30;
-        public const int LabelWidth = 4 * VertexRadius;
-        public const int LabelHeight = 2 * VertexRadius;
+        public const int LabelWidthModifier = 5;
+        public const int LabelHeightModifier = 2;
         public static Font Font { get; private set; } = new Font("Consolas", 9);
     }
     public class Vertex
@@ -90,11 +104,46 @@ namespace GraphWinForms
         public int Y { get; private set; }
         public string Name { get; private set; }
         public int Radius { get; private set; }
+        public Color BorderColor { get; private set; } = Color.Black;
         public Vertex(int x, int y, string name, int radius = DefaultSettings.VertexRadius)
         {
             this.X = x;
             this.Y = y;
             this.Name = name;
+            this.Radius = radius;
+        }
+        public void SetBorderColor(Color borderColor)
+        {
+            this.BorderColor = borderColor;
+        }
+        public void SetCoordinates(int x, int y)
+        {
+            if (x >= 0) this.X = x;
+            if (y >= 0) this.Y = y;
+        }
+        public void SetRadius(int radius)
+        {
+            if (radius >= 15 && radius <= 30) this.Radius = radius;
+        }
+        public void SetName(string name)
+        {
+            if (name != String.Empty) this.Name = name;
+        }
+        public void Select()
+        {
+            SetBorderColor(Color.Red);
+            if (DrawGraph.SelectedVertices.Contains(this)) Unselect();
+            else
+            {
+                DrawGraph.SelectedVertices.Add(this);
+                DrawGraph.RedrawSheet();
+            }
+        }
+        public void Unselect()
+        {
+            SetBorderColor(Color.Black);
+            DrawGraph.SelectedVertices.Remove(this);
+            DrawGraph.RedrawSheet();
         }
         public override string ToString() => Name;
     }
@@ -109,32 +158,42 @@ namespace GraphWinForms
             this.SecondVertex = secondVertex;
             this.Weight = weight;
         }
-    }
-    public class DrawGraph
-    {
-        private Graphics Graphics { get; set; }
-        public int CurrentNumber { get; private set; } = 1;
-        public List<Vertex> Vertices { get; private set; }
-        public DrawGraph(Graphics Graphics)
+        public void SetWeight(int weight)
         {
-            if (Graphics == null) throw new NullReferenceException();
-            
-            this.Graphics = Graphics;
-            Vertices = new List<Vertex>();
+            if (weight >= 0) this.Weight = weight;
         }
-        private void Redraw()
+    }
+    public static class DrawGraph
+    {
+        private static Graphics Graphics { get; set; }
+        public static int CurrentNumber { get; private set; } = 1;
+        public static List<Vertex> Vertices { get; private set; } = new List<Vertex>();
+        public static List<Vertex> SelectedVertices { get; private set; } = new List<Vertex>();
+        public static void SetGraphics(Graphics graphics)
         {
-            Clear();
+            if (graphics == null) throw new NullReferenceException();
+            Graphics = graphics;
+        }
+        public static void RedrawSheet()
+        {
+            ClearSheet();
             foreach (var vertex in Vertices)
             {
                 DrawVertex(vertex);
             }
         }
-        private void Clear()
+        private static void ClearSheet()
         {
             Graphics.Clear(Color.White);
         }
-        public bool IsVertexClicked(int xPos, int yPos, int vertexRadiusExpansion = 0)
+        public static void ClearGraph()
+        {
+            Vertices.Clear();
+            SelectedVertices.Clear();
+            CurrentNumber = 1;
+            ClearSheet();
+        }
+        public static bool IsVertexClicked(int xPos, int yPos, int vertexRadiusExpansion = 0)
         {
             foreach (var vertex in Vertices)
             {
@@ -144,48 +203,122 @@ namespace GraphWinForms
             }
             return false;
         }
-        public void AddVertex(int xPos, int yPos, string name = "")
+        public static Vertex GetVertexOnClick(int xPos, int yPos)
+        {
+            foreach (var vertex in Vertices)
+            {
+                if (Math.Pow(xPos - vertex.X, 2) + Math.Pow(yPos - vertex.Y, 2) <=
+                    Math.Pow(DefaultSettings.VertexRadius, 2))
+                    return vertex;
+            }
+            return null;
+        }
+        public static bool IsVertexExist(string name)
+        {
+            foreach (var vertex in Vertices)
+            {
+                if (vertex.Name == name) return true;
+            }
+            return false;
+        }
+        public static void AddVertex(int xPos, int yPos, string name = "")
         {
             if (!IsVertexClicked(xPos, yPos, DefaultSettings.VertexRadiusExpansion))
             {
                 var Name = name == String.Empty ? CurrentNumber++.ToString() : name;
-                Vertices.Add(new Vertex(xPos, yPos, Name));
-                Redraw();
+                if (!IsVertexExist(Name))
+                {
+                    Vertices.Add(new Vertex(xPos, yPos, Name));
+                    RedrawSheet();
+                }
             }
         }
-        private void DrawVertex(Vertex vertex)
+        public static void EditVertex(int xPos, int yPos, int newX, int newY, int newRadius = DefaultSettings.VertexRadius, string newName = "")
+        {
+            var vertex = GetVertexOnClick(xPos, yPos);
+            if (vertex != null)
+            {
+                if (!IsVertexClicked(newX, newY)) vertex.SetCoordinates(newX, newY);
+                if (!IsVertexExist(newName)) vertex.SetName(newName);
+                vertex.SetRadius(newRadius);
+                RedrawSheet();
+            }
+        }
+        public static void EditVertex(Vertex vertex, int newX, int newY, int newRadius = DefaultSettings.VertexRadius, string newName = "")
+        {
+            if (vertex != null)
+            {
+                if (!IsVertexClicked(newX, newY)) vertex.SetCoordinates(newX, newY);
+                if (!IsVertexExist(newName)) vertex.SetName(newName);
+                vertex.SetRadius(newRadius);
+                RedrawSheet();
+            }
+        }
+        public static void SelectVertex(Vertex vertex)
+        {
+            vertex.Select();
+        }
+        public static void RemoveSelection()
+        {
+            foreach (var vertex in Vertices)
+            {
+                vertex.Unselect();
+            }
+            RedrawSheet();
+        }
+        private static void DrawVertex(Vertex vertex)
         {
             Graphics.FillEllipse
             (
                 Brushes.White,
-                vertex.X - DefaultSettings.VertexRadius,
-                vertex.Y - DefaultSettings.VertexRadius,
-                2 * DefaultSettings.VertexRadius,
-                2 * DefaultSettings.VertexRadius
+                vertex.X - vertex.Radius,
+                vertex.Y - vertex.Radius,
+                2 * vertex.Radius,
+                2 * vertex.Radius
             );
             Graphics.DrawEllipse
             (
-                Pens.Black,
-                vertex.X - DefaultSettings.VertexRadius,
-                vertex.Y - DefaultSettings.VertexRadius,
-                2 * DefaultSettings.VertexRadius,
-                2 * DefaultSettings.VertexRadius
+                new Pen(vertex.BorderColor),
+                vertex.X - vertex.Radius,
+                vertex.Y - vertex.Radius,
+                2 * vertex.Radius,
+                2 * vertex.Radius
             );
             PointF point = new PointF
             (
-                vertex.X - DefaultSettings.VertexRadius / 2,
-                vertex.Y - DefaultSettings.VertexRadius / 2
+                vertex.X - vertex.Radius / 2,
+                vertex.Y - vertex.Radius / 2
             );
 
             var rect = new Rectangle
             (
-                vertex.X - DefaultSettings.LabelWidth / 2,
-                vertex.Y - DefaultSettings.LabelHeight / 2,
-                DefaultSettings.LabelWidth,
-                DefaultSettings.LabelHeight
+                vertex.X - DefaultSettings.LabelWidthModifier * vertex.Radius / 2,
+                vertex.Y - DefaultSettings.LabelHeightModifier * vertex.Radius / 2,
+                DefaultSettings.LabelWidthModifier * vertex.Radius,
+                DefaultSettings.LabelHeightModifier * vertex.Radius
             );
             TextRenderer.DrawText(Graphics, vertex.Name, DefaultSettings.Font, rect, Color.Black,
                    TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
+        }
+    }
+    public static class Utils
+    {
+        public static bool Confirmation(string ConfirmationText, string ConfirmationTitle, MessageBoxDefaultButton DefaultButton = MessageBoxDefaultButton.Button1)
+        {
+            if (ConfirmationText == String.Empty || ConfirmationTitle == String.Empty)
+                throw new ArgumentNullException();
+
+            var ConfirmationResult = MessageBox.Show
+            (
+                ConfirmationText,
+                ConfirmationTitle,
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question,
+                DefaultButton
+            );
+
+            if (ConfirmationResult == DialogResult.Yes) return true;
+            return false;
         }
     }
 }
