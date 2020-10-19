@@ -22,8 +22,7 @@ namespace GraphWinForms
             display.BackColor = Color.White;
             display.BorderStyle = BorderStyle.FixedSingle;
 
-            graphics = display.CreateGraphics();
-            DrawGraph.SetGraphics(graphics);
+            DrawGraph.CreateGraphics(display);
             DrawTool = new Tool(this);
 
             this.Activated += delegate { DrawTool.LoseFocus(); };

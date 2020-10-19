@@ -169,10 +169,10 @@ namespace GraphWinForms
         public static int CurrentNumber { get; private set; } = 1;
         public static List<Vertex> Vertices { get; private set; } = new List<Vertex>();
         public static List<Vertex> SelectedVertices { get; private set; } = new List<Vertex>();
-        public static void SetGraphics(Graphics graphics)
+        public static void CreateGraphics(PictureBox pictureBox)
         {
-            if (graphics == null) throw new NullReferenceException();
-            Graphics = graphics;
+            if (pictureBox == null) throw new NullReferenceException();
+            Graphics = pictureBox.CreateGraphics();
         }
         public static void RedrawSheet()
         {
