@@ -1,0 +1,14 @@
+E:\Projects\Visual Studio\C#\GraphWinForms\GraphWinForms\bin\Release\Newtonsoft.Json.dll
+E:\Projects\Visual Studio\C#\GraphWinForms\GraphWinForms\bin\Release\Newtonsoft.Json.xml
+E:\Projects\Visual Studio\C#\GraphWinForms\GraphWinForms\obj\Release\GraphWinForms.Form1.resources
+E:\Projects\Visual Studio\C#\GraphWinForms\GraphWinForms\obj\Release\GraphWinForms.InputDialog.resources
+E:\Projects\Visual Studio\C#\GraphWinForms\GraphWinForms\obj\Release\GraphWinForms.Properties.Resources.resources
+E:\Projects\Visual Studio\C#\GraphWinForms\GraphWinForms\obj\Release\GraphWinForms.csproj.GenerateResource.cache
+E:\Projects\Visual Studio\C#\GraphWinForms\GraphWinForms\obj\Release\GraphWinForms.csproj.CoreCompileInputs.cache
+E:\Projects\Visual Studio\C#\GraphWinForms\GraphWinForms\obj\Release\GraphWinForms.csproj.CopyComplete
+E:\Projects\Visual Studio\C#\GraphWinForms\GraphWinForms\obj\Release\GraphWinForms.csprojAssemblyReference.cache
+E:\Projects\Visual Studio\C#\GraphWinForms\GraphWinForms\bin\Release\Graph Builder.exe.config
+E:\Projects\Visual Studio\C#\GraphWinForms\GraphWinForms\bin\Release\Graph Builder.exe
+E:\Projects\Visual Studio\C#\GraphWinForms\GraphWinForms\bin\Release\Graph Builder.pdb
+E:\Projects\Visual Studio\C#\GraphWinForms\GraphWinForms\obj\Release\Graph Builder.exe
+E:\Projects\Visual Studio\C#\GraphWinForms\GraphWinForms\obj\Release\Graph Builder.pdb

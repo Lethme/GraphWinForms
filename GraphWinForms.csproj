@@ -7,7 +7,7 @@
     <ProjectGuid>{2EF6B8AA-695F-4659-92D6-F30BEFDDEF05}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>GraphWinForms</RootNamespace>
-    <AssemblyName>GraphWinForms</AssemblyName>
+    <AssemblyName>Graph Builder</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -32,7 +32,17 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>graph-icon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <Win32Resource>
+    </Win32Resource>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -46,6 +56,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Association.cs" />
     <Compile Include="DrawGraph.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
@@ -79,6 +90,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -96,6 +108,7 @@
     <None Include="Resources\Images\delete.png" />
     <None Include="Resources\Images\edit.png" />
     <None Include="Resources\Images\save.png" />
+    <Content Include="graph-icon.ico" />
     <Content Include="Resources\Images\trash.png" />
     <Content Include="Resources\Images\cursor.png" />
     <Content Include="Resources\Images\vertex.png" />

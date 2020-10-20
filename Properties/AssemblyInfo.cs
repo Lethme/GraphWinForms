@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // Общие сведения об этой сборке предоставляются следующим набором
 // набора атрибутов. Измените значения этих атрибутов для изменения сведений,
 // связанных со сборкой.
-[assembly: AssemblyTitle("GraphWinForms")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Graph Builder")]
+[assembly: AssemblyDescription("Graph Builder")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("GraphWinForms")]
-[assembly: AssemblyCopyright("Copyright ©  2020")]
+[assembly: AssemblyCompany("No Walls Production")]
+[assembly: AssemblyProduct("Graph Builder")]
+[assembly: AssemblyCopyright("Copyright ©  2020 No Walls Production")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

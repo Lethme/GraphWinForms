@@ -14,7 +14,7 @@ namespace GraphWinForms
 {
     public partial class Form1 : Form
     {
-        public Form1()
+        public Form1(string[] args)
         {
             InitializeComponent();
             display.BackColor = Color.White;
@@ -32,6 +32,11 @@ namespace GraphWinForms
             DrawTool.SetFormHandler(this);
 
             this.Activated += delegate { DrawTool.LoseFocus(); };
+
+            if (args.Length > 0)
+            {
+                DrawGraph.LoadGraphFromGWFFile(args[0]);
+            }
         }
 
         private void cursorTool_Click(object sender, EventArgs e)
@@ -66,11 +71,70 @@ namespace GraphWinForms
                 DrawGraph.ClearGraph();
             }
         }
-
         private void saveImageTool_Click(object sender, EventArgs e)
         {
             DrawTool.LoseFocus();
             DrawGraph.SaveGraphAsImage();
+        }
+
+        private void saveAsImageFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DrawGraph.SaveGraphAsImage();
+        }
+
+        private void saveAsGWFFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DrawGraph.SaveGraphAsGWFFile();
+        }
+
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DrawGraph.LoadGraphFromGWFFile();
+        }
+
+        private void aboutToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void associateFileTypeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Utils.AssociateExtension();
+        }
+
+        private void unassociateFileTypeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Utils.UnAssociateExtension();
+        }
+
+        private void testToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var VertexInfo = String.Empty;
+            foreach (var vertex in DrawGraph.Graph.Vertices)
+            {
+                VertexInfo += $"{vertex} -- {vertex.X} -- {vertex.Y}\n";
+            }
+
+            Task.Run(() =>
+            {
+                MessageBox.Show(VertexInfo);
+            });
+
+            var EdgeInfo = String.Empty;
+            foreach (var edge in DrawGraph.Graph.Edges)
+            {
+                EdgeInfo += $"{edge.FirstVertex} -- {edge.SecondVertex} -- {edge.Weight}\n";
+            }
+
+            Task.Run(() =>
+            {
+                MessageBox.Show(EdgeInfo);
+            });
         }
     }
 }
