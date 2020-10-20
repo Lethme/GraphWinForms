@@ -18,3 +18,4 @@ E:\Projects\Visual Studio\C#\GraphWinForms\GraphWinForms\obj\Debug\GraphWinForms
 E:\Projects\Visual Studio\C#\GraphWinForms\GraphWinForms\obj\Debug\GraphWinForms.csproj.CoreCompileInputs.cache
 E:\Projects\Visual Studio\C#\GraphWinForms\GraphWinForms\obj\Debug\GraphWinForms.exe
 E:\Projects\Visual Studio\C#\GraphWinForms\GraphWinForms\obj\Debug\GraphWinForms.pdb
+E:\Projects\Visual Studio\C#\GraphWinForms\GraphWinForms\obj\Debug\GraphWinForms.InputDialog.resources

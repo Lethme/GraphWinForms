@@ -55,10 +55,19 @@
     </Compile>
     <Compile Include="Graph.cs" />
     <Compile Include="GraphUtils.cs" />
+    <Compile Include="InputDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="InputDialog.Designer.cs">
+      <DependentUpon>InputDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InputDialog.resx">
+      <DependentUpon>InputDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -84,12 +93,13 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="resources\images\delete.png" />
-    <None Include="resources\images\edit.png" />
-    <Content Include="resources\images\trash.png" />
-    <Content Include="resources\images\cursor.png" />
-    <Content Include="resources\images\vertex.png" />
-    <Content Include="resources\images\edge.png" />
+    <None Include="Resources\Images\delete.png" />
+    <None Include="Resources\Images\edit.png" />
+    <None Include="Resources\Images\save.png" />
+    <Content Include="Resources\Images\trash.png" />
+    <Content Include="Resources\Images\cursor.png" />
+    <Content Include="Resources\Images\vertex.png" />
+    <Content Include="Resources\Images\edge.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
