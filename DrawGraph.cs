@@ -236,7 +236,7 @@ namespace GraphWinForms
                                 var secondVertexName = DrawGraph.Graph.SelectedVertices[1].Name;
                                 var result = DrawGraph.LocalGraph.FindShortestPath(firstVertexName, secondVertexName);
 
-                                DrawGraph.HighlightPath(result.ShortestPath, Color.Tomato);
+                                DrawGraph.HighlightPath(result.ShortestPath, Color.DeepSkyBlue, Color.Tomato);
                                 MessageBox.Show
                                 (
                                     result.ToString(),
@@ -1191,17 +1191,26 @@ namespace GraphWinForms
         /// Sets borders color to stated list of vertices
         /// </summary>
         /// <param name="verticesNames">List of vertices</param>
-        /// <param name="color">Border color</param>
-        public static void HighlightPath(List<string> verticesNames, Color color)
+        /// <param name="pathColor">Border color</param>
+        public static void HighlightPath(List<string> verticesNames, Color pathColor, Color edgeVerticesColor)
         {
             if (verticesNames != null && verticesNames.Count > 1)
             {
+                var vertexCount = 0;
                 foreach (var vertexName in verticesNames)
                 {
                     var vertex = GetVertexByName(vertexName);
                     if (vertex != null)
                     {
-                        vertex.SetBorderColor(color);
+                        if (vertexCount == 0 || vertexCount == verticesNames.Count - 1)
+                        {
+                            vertex.SetBorderColor(edgeVerticesColor);
+                        }
+                        else
+                        {
+                            vertex.SetBorderColor(pathColor);
+                        }
+                        vertexCount++;
                     }
                 }
                 for (var i = 0; i < verticesNames.Count - 1; i++)
@@ -1209,7 +1218,7 @@ namespace GraphWinForms
                     var Edge = GetEdgeByVerticesNames(verticesNames[i], verticesNames[i + 1]);
                     if (Edge != null)
                     {
-                        Edge.SetColor(color);
+                        Edge.SetColor(pathColor);
                     }
                 }
 

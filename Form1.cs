@@ -27,6 +27,7 @@ namespace GraphWinForms
             ToolTip.SetToolTip(editTool, "Edit graph elements tool");
             ToolTip.SetToolTip(deleteTool, "Delete graph elements tool");
             ToolTip.SetToolTip(clearTool, "Clear graph");
+            ToolTip.SetToolTip(deikstraTool, "Find a shortest path between two selected vertices");
 
             DrawGraph.CreateGraphics(display);
             DrawTool.SetFormHandler(this);
