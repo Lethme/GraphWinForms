@@ -1191,7 +1191,8 @@ namespace GraphWinForms
         /// Sets borders color to stated list of vertices
         /// </summary>
         /// <param name="verticesNames">List of vertices</param>
-        /// <param name="pathColor">Border color</param>
+        /// <param name="pathColor">Path color</param>
+        /// <param name="edgeVerticesColor">Color for vertices on the edges of the path</param>
         public static void HighlightPath(List<string> verticesNames, Color pathColor, Color edgeVerticesColor)
         {
             if (verticesNames != null && verticesNames.Count > 1)
