@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Graph
+namespace GraphWinForms
 {
     /// <summary>
     /// Информация о вершине
@@ -47,16 +47,23 @@ namespace Graph
     {
         public string ShortestPath { get; private set; }
         public int ShortestPathWeight { get; private set; }
+        public List<string> Path { get; private set; }
         public DeikstraResult(string shortestPath, int shortestPathWeight)
         {
             ShortestPath = shortestPath;
             ShortestPathWeight = shortestPathWeight;
+            Path = ShortestPath.Split('-').ToList();
         }
         public override string ToString()
         {
-            int FromLeft = 15;
-            return "Shortest Path: ".PadLeft(FromLeft) + this.ShortestPath +
-                   '\n' + "Weight: ".PadLeft(FromLeft) + this.ShortestPathWeight;
+            var Result = "Shortest Path:\n\n";
+            foreach (var vertexName in Path)
+            {
+                Result += $"{vertexName}\n";
+            }
+            Result += $"\nPath Weight: {ShortestPathWeight}";
+            
+            return Result;
         }
     }
     /// <summary>

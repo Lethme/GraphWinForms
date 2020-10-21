@@ -103,6 +103,16 @@ namespace GraphWinForms.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap graph_icon {
+            get {
+                object obj = ResourceManager.GetObject("graph-icon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap save {
             get {
                 object obj = ResourceManager.GetObject("save", resourceCulture);
@@ -126,6 +136,16 @@ namespace GraphWinForms.Properties {
         internal static System.Drawing.Bitmap vertex {
             get {
                 object obj = ResourceManager.GetObject("vertex", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap way {
+            get {
+                object obj = ResourceManager.GetObject("way", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

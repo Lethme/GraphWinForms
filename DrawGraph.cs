@@ -8,7 +8,6 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Graph;
 using Newtonsoft.Json;
 using Extension;
 
@@ -16,25 +15,26 @@ namespace GraphWinForms
 {
     public enum DrawTools
     {
-        Cursor = 0,
-        Vertex = 1,
-        Edge = 2,
-        Edit = 3,
-        Delete = 4
+        Cursor,
+        Vertex,
+        Edge,
+        Edit,
+        Delete,
+        Deikstra
     }
     public static class DrawTool
     {
-        public static int CurrentTool { get; private set; } = (int)DrawTools.Cursor;
+        public static DrawTools CurrentTool { get; private set; } = DrawTools.Cursor;
         public static Form1 FormHandler { get; private set; }
         public static void SetFormHandler(Form1 formHandler)
         { 
             FormHandler = formHandler;
             SelectTool();
         }
-        public static void SetTool(int Tool)
+        public static void SetTool(DrawTools Tool)
         {
             if (!Enum.IsDefined(typeof(DrawTools), (int)Tool))
-                CurrentTool = (int)DrawTools.Cursor;
+                CurrentTool = DrawTools.Cursor;
             CurrentTool = Tool;
             SelectTool();
         }
@@ -46,49 +46,64 @@ namespace GraphWinForms
         {
             switch (CurrentTool)
             {
-                case (int)DrawTools.Cursor:
+                case DrawTools.Cursor:
                     {
                         FormHandler.cursorTool.Enabled = false;
                         FormHandler.vertexTool.Enabled = true;
                         FormHandler.edgeTool.Enabled = true;
                         FormHandler.editTool.Enabled = true;
                         FormHandler.deleteTool.Enabled = true;
+                        FormHandler.deikstraTool.Enabled = true;
                         break;
                     }
-                case (int)DrawTools.Vertex:
+                case DrawTools.Vertex:
                     {
                         FormHandler.cursorTool.Enabled = true;
                         FormHandler.vertexTool.Enabled = false;
                         FormHandler.edgeTool.Enabled = true;
                         FormHandler.editTool.Enabled = true;
                         FormHandler.deleteTool.Enabled = true;
+                        FormHandler.deikstraTool.Enabled = true;
                         break;
                     }
-                case (int)DrawTools.Edge:
+                case DrawTools.Edge:
                     {
                         FormHandler.cursorTool.Enabled = true;
                         FormHandler.vertexTool.Enabled = true;
                         FormHandler.edgeTool.Enabled = false;
                         FormHandler.editTool.Enabled = true;
                         FormHandler.deleteTool.Enabled = true;
+                        FormHandler.deikstraTool.Enabled = true;
                         break;
                     }
-                case (int)DrawTools.Edit:
+                case DrawTools.Edit:
                     {
                         FormHandler.cursorTool.Enabled = true;
                         FormHandler.vertexTool.Enabled = true;
                         FormHandler.edgeTool.Enabled = true;
                         FormHandler.editTool.Enabled = false;
                         FormHandler.deleteTool.Enabled = true;
+                        FormHandler.deikstraTool.Enabled = true;
                         break;
                     }
-                case (int)DrawTools.Delete:
+                case DrawTools.Delete:
                     {
                         FormHandler.cursorTool.Enabled = true;
                         FormHandler.vertexTool.Enabled = true;
                         FormHandler.edgeTool.Enabled = true;
                         FormHandler.editTool.Enabled = true;
                         FormHandler.deleteTool.Enabled = false;
+                        FormHandler.deikstraTool.Enabled = true;
+                        break;
+                    }
+                case DrawTools.Deikstra:
+                    {
+                        FormHandler.cursorTool.Enabled = true;
+                        FormHandler.vertexTool.Enabled = true;
+                        FormHandler.edgeTool.Enabled = true;
+                        FormHandler.editTool.Enabled = true;
+                        FormHandler.deleteTool.Enabled = true;
+                        FormHandler.deikstraTool.Enabled = false;
                         break;
                     }
             }
@@ -100,13 +115,13 @@ namespace GraphWinForms
             {
                 switch (DrawTool.CurrentTool)
                 {
-                    case (int)DrawTools.Cursor:
+                    case DrawTools.Cursor:
                         {
                             var vertex = DrawGraph.GetVertexByCoordinates(e.X, e.Y);
                             MessageBox.Show(vertex == null ? "No vertex clicked" : vertex.Name);
                             break;
                         }
-                    case (int)DrawTools.Vertex:
+                    case DrawTools.Vertex:
                         {
                             if (!DrawGraph.IsVertexExist(e.X, e.Y, DefaultSettings.VertexRadiusExpansion))
                             {
@@ -122,7 +137,7 @@ namespace GraphWinForms
                             }
                             break;
                         }
-                    case (int)DrawTools.Edge:
+                    case DrawTools.Edge:
                         {
                             var vertex = DrawGraph.GetVertexByCoordinates(e.X, e.Y);
                             if (vertex != null) vertex.Select();
@@ -147,7 +162,7 @@ namespace GraphWinForms
                             }
                             break;
                         }
-                    case (int)DrawTools.Edit:
+                    case DrawTools.Edit:
                         {
                             var vertex = DrawGraph.GetVertexByCoordinates(e.X, e.Y);
                             if (vertex != null)
@@ -164,16 +179,36 @@ namespace GraphWinForms
                             }
                             break;
                         }
-                    case (int)DrawTools.Delete:
+                    case DrawTools.Delete:
                         {
                             var vertex = DrawGraph.GetVertexByCoordinates(e.X, e.Y);
                             if (vertex != null)
                             {
                                 if (Utils.Confirmation($"Are you really want to delete '{vertex.Name}' vertex?", "Delete Vertex"))
                                 {
-                                    DrawGraph.DeleteVertex(vertex);
+                                    DrawGraph.RemoveVertex(vertex);
                                     DrawGraph.RedrawSheet();
                                 }
+                            }
+                            break;
+                        }
+                    case DrawTools.Deikstra:
+                        {
+                            var vertex = DrawGraph.GetVertexByCoordinates(e.X, e.Y);
+                            if (vertex != null) vertex.Select();
+                            else if (DrawGraph.Graph.SelectedVertices.Count > 0) DrawGraph.RemoveSelection();
+                            DrawGraph.RedrawSheet();
+
+                            if (DrawGraph.Graph.SelectedVertices.Count == 2)
+                            {
+                                var firstVertexName = DrawGraph.Graph.SelectedVertices[0].Name;
+                                var secondVertexName = DrawGraph.Graph.SelectedVertices[1].Name;
+                                MessageBox.Show
+                                (
+                                    DrawGraph.LocalGraph.FindShortestPath(firstVertexName, secondVertexName).ToString(),
+                                    "Shortest path with Deikstra Algorithm"
+                                );
+                                DrawGraph.RemoveSelection();
                             }
                             break;
                         }
@@ -183,19 +218,19 @@ namespace GraphWinForms
             {
                 switch (DrawTool.CurrentTool)
                 {
-                    case (int)DrawTools.Cursor:
+                    case DrawTools.Cursor:
                         {
                             break;
                         }
-                    case (int)DrawTools.Vertex:
+                    case DrawTools.Vertex:
                         {
                             break;
                         }
-                    case (int)DrawTools.Edge:
+                    case DrawTools.Edge:
                         {
                             break;
                         }
-                    case (int)DrawTools.Edit:
+                    case DrawTools.Edit:
                         {
                             var vertex = DrawGraph.GetVertexByCoordinates(e.X, e.Y);
                             if (vertex != null) vertex.Select();
@@ -222,7 +257,7 @@ namespace GraphWinForms
                             }
                             break;
                         }
-                    case (int)DrawTools.Delete:
+                    case DrawTools.Delete:
                         {
                             var vertex = DrawGraph.GetVertexByCoordinates(e.X, e.Y);
                             if (vertex != null) vertex.Select();
@@ -237,12 +272,16 @@ namespace GraphWinForms
                                         $"'{DrawGraph.Graph.SelectedVertices[0].Name}' and '{DrawGraph.Graph.SelectedVertices[1].Name}' vertices?",
                                         "Delete Vertex"))
                                     {
-                                        DrawGraph.DeleteEdge(DrawGraph.Graph.SelectedVertices[0], DrawGraph.Graph.SelectedVertices[1]);
+                                        DrawGraph.RemoveEdge(DrawGraph.Graph.SelectedVertices[0], DrawGraph.Graph.SelectedVertices[1]);
                                     }
                                 }
                                 DrawGraph.RemoveSelection();
                                 DrawGraph.RedrawSheet();
                             }
+                            break;
+                        }
+                    case DrawTools.Deikstra:
+                        {
                             break;
                         }
                 }
@@ -374,6 +413,7 @@ namespace GraphWinForms
         public static PictureBox PictureBox { get; private set; }
         public static Bitmap GraphBitmap { get; private set; }
         public static GraphData Graph { get; private set; } = new GraphData();
+        public static Graph LocalGraph { get; private set; } = new Graph();
         public static void CreateGraphics(PictureBox pictureBox)
         {
             if (pictureBox == null) throw new NullReferenceException();
@@ -404,6 +444,18 @@ namespace GraphWinForms
             {
                 ClearGraph();
                 Graph = graph;
+                InitializeLocalGraph();
+            }
+        }
+        private static void InitializeLocalGraph()
+        {
+            foreach (var vertex in Graph.Vertices)
+            {
+                LocalGraph.AddVertex(vertex.Name);
+            }
+            foreach (var edge in Graph.Edges)
+            {
+                LocalGraph.AddEdge(edge.FirstVertex.Name, edge.SecondVertex.Name, edge.Weight);
             }
         }
         private static void ClearSheet()
@@ -421,12 +473,24 @@ namespace GraphWinForms
             Graph.SelectedVertices.Clear();
             Graph.Edges.Clear();
             Graph.CurrentNumber = 1;
+            LocalGraph.Clear();
             ClearSheet();
+        }
+        public enum SaveType
+        {
+            Normal,
+            Silent
+        }
+        public enum LoadType
+        {
+            Normal,
+            Silent
         }
         public static void SaveGraphAsImage()
         {
             if (PictureBox.Image != null)
             {
+                if (Graph.SelectedVertices.Count > 0) RemoveSelection();
                 using (var saveDialog = new SaveFileDialog())
                 {
                     saveDialog.Title = "Save graph as Image...";
@@ -442,7 +506,7 @@ namespace GraphWinForms
                         }
                         catch
                         {
-                            MessageBox.Show("An error occurred while saving the image", "Error",
+                            MessageBox.Show("An error occurred while saving an image", "Error",
                             MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
@@ -451,6 +515,7 @@ namespace GraphWinForms
         }
         public static void SaveGraphAsGWFFile()
         {
+            if (Graph.SelectedVertices.Count > 0) RemoveSelection();
             using (var saveDialog = new SaveFileDialog())
             {
                 saveDialog.Title = "Save graph as Graph Builder File...";
@@ -460,20 +525,27 @@ namespace GraphWinForms
                 saveDialog.ShowHelp = true;
                 if (saveDialog.ShowDialog() == DialogResult.OK)
                 {
-                    try
-                    {
-                        using (var GraphFile = new StreamWriter(saveDialog.FileName))
-                        {
-                            var JsonString = JsonConvert.SerializeObject(Graph);
-                            GraphFile.WriteLine(JsonString);
-                            GraphFile.Close();
-                        }
-                    }
-                    catch
-                    {
-                        MessageBox.Show("An error occurred while saving graph", "Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
+                    SaveGraphAsGWFFile(saveDialog.FileName);
+                }
+            }
+        }
+        public static void SaveGraphAsGWFFile(string FileName, SaveType Type = SaveType.Normal)
+        {
+            try
+            {
+                using (var GraphFile = new StreamWriter(FileName))
+                {
+                    var JsonString = JsonConvert.SerializeObject(Graph);
+                    GraphFile.Write(JsonString);
+                    GraphFile.Close();
+                }
+            }
+            catch
+            {
+                if (Type == SaveType.Normal)
+                {
+                    MessageBox.Show("An error occurred while saving a graph", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -487,35 +559,25 @@ namespace GraphWinForms
                 openDialog.ShowHelp = true;
                 if (openDialog.ShowDialog() == DialogResult.OK)
                 {
-                    var loadGraph = ConvertJsonToGraphData(openDialog.FileName);
+                    var loadGraph = ReadJsonFromLocalFile(openDialog.FileName);
                     if (loadGraph != null)
                     {
                         SetGraphData(loadGraph);
                         RedrawSheet();
-                    }
-                    else
-                    {
-                        MessageBox.Show("An error occurred while opening Graph File", "Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
             }
         }
         public static void LoadGraphFromGWFFile(string FileName)
         {
-            var loadGraph = ConvertJsonToGraphData(FileName);
+            var loadGraph = ReadJsonFromLocalFile(FileName);
             if (loadGraph != null)
             {
                 SetGraphData(loadGraph);
                 RedrawSheet();
             }
-            else
-            {
-                MessageBox.Show("An error occurred while opening Graph File", "Error",
-                MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
         }
-        private static GraphData ConvertJsonToGraphData(string FileName)
+        private static GraphData ReadJsonFromLocalFile(string FileName, LoadType Type = LoadType.Normal)
         {
             try
             {
@@ -526,6 +588,11 @@ namespace GraphWinForms
             }
             catch (Exception)
             {
+                if (Type == LoadType.Normal)
+                {
+                    MessageBox.Show("An error occurred while opening Graph File", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
                 return null;
             }
         }
@@ -611,7 +678,8 @@ namespace GraphWinForms
                 var Name = name == String.Empty ? Graph.CurrentNumber++.ToString() : name;
                 if (!IsVertexExist(Name))
                 {
-                   Graph.Vertices.Add(new Vertex(xPos, yPos, Name));
+                    Graph.Vertices.Add(new Vertex(xPos, yPos, Name));
+                    LocalGraph.AddVertex(Name);
                 }
             }
         }
@@ -624,9 +692,13 @@ namespace GraphWinForms
                 if (FirstVertex != null && SecondVertex != null)
                 {
                     Graph.Edges.Add(new Edge(FirstVertex, SecondVertex, weight));
+                    LocalGraph.AddEdge(firstVertexName, secondVertexName, weight);
                 }
             }
         }
+        ////////////////////////////////////////////////
+        // Have to add Editing methods to Graph class //
+        ////////////////////////////////////////////////
         public static void EditVertex(int xPos, int yPos, string newName, int newX = -1, int newY = -1, int newRadius = DefaultSettings.VertexRadius)
         {
             var vertex = GetVertexByCoordinates(xPos, yPos);
@@ -683,21 +755,25 @@ namespace GraphWinForms
             var Edge = GetEdgeByVerticesNames(firstVertexName, secondVertexName);
             EditEdge(Edge, weight);
         }
-        public static void DeleteEdge(Edge edge)
+        public static void RemoveEdge(Edge edge)
         {
-            if (edge != null) Graph.Edges.Remove(edge);
+            if (edge != null)
+            {
+                Graph.Edges.Remove(edge);
+                LocalGraph.RemoveEdge(edge.FirstVertex.Name, edge.SecondVertex.Name);
+            }
         }
-        public static void DeleteEdge(Vertex firstVertex, Vertex secondVertex)
+        public static void RemoveEdge(Vertex firstVertex, Vertex secondVertex)
         {
             var Edge = GetEdgeByVertices(firstVertex, secondVertex);
-            DeleteEdge(Edge);
+            RemoveEdge(Edge);
         }
-        public static void DeleteEdge(string firstVertexName, string secondVertexName)
+        public static void RemoveEdge(string firstVertexName, string secondVertexName)
         {
             var Edge = GetEdgeByVerticesNames(firstVertexName, secondVertexName);
-            DeleteEdge(Edge);
+            RemoveEdge(Edge);
         }
-        public static void DeleteVertex(Vertex vertex)
+        public static void RemoveVertex(Vertex vertex)
         {
             var EdgesToDelete = new List<Edge>();
             foreach (var edge in Graph.Edges)
@@ -706,9 +782,10 @@ namespace GraphWinForms
             }
             foreach (var edge in EdgesToDelete)
             {
-                DeleteEdge(edge);
+                RemoveEdge(edge);
             }
             Graph.Vertices.Remove(vertex);
+            LocalGraph.RemoveVertex(vertex.Name);
         }
         public static void SelectVertex(Vertex vertex)
         {

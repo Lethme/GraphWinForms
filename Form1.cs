@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Graph;
+using GraphWinForms;
 
 namespace GraphWinForms
 {
@@ -41,26 +41,31 @@ namespace GraphWinForms
 
         private void cursorTool_Click(object sender, EventArgs e)
         {
-            DrawTool.SetTool((int)DrawTools.Cursor);
+            DrawTool.SetTool(DrawTools.Cursor);
         }
 
         private void vertexTool_Click(object sender, EventArgs e)
         {
-            DrawTool.SetTool((int)DrawTools.Vertex);
+            DrawTool.SetTool(DrawTools.Vertex);
         }
 
         private void edgeTool_Click(object sender, EventArgs e)
         {
-            DrawTool.SetTool((int)DrawTools.Edge);
+            DrawTool.SetTool(DrawTools.Edge);
         }
         private void editTool_Click(object sender, EventArgs e)
         {
-            DrawTool.SetTool((int)DrawTools.Edit);
+            DrawTool.SetTool(DrawTools.Edit);
         }
 
         private void deleteTool_Click(object sender, EventArgs e)
         {
-            DrawTool.SetTool((int)DrawTools.Delete);
+            DrawTool.SetTool(DrawTools.Delete);
+        }
+
+        private void deikstraTool_Click(object sender, EventArgs e)
+        {
+            DrawTool.SetTool(DrawTools.Deikstra);
         }
 
         private void clearTool_Click_1(object sender, EventArgs e)
@@ -94,7 +99,10 @@ namespace GraphWinForms
 
         private void aboutToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-
+            using (var AboutForm = new About())
+            {
+                AboutForm.ShowDialog();
+            }
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -120,11 +128,6 @@ namespace GraphWinForms
                 VertexInfo += $"{vertex} -- {vertex.X} -- {vertex.Y}\n";
             }
 
-            Task.Run(() =>
-            {
-                MessageBox.Show(VertexInfo);
-            });
-
             var EdgeInfo = String.Empty;
             foreach (var edge in DrawGraph.Graph.Edges)
             {
@@ -133,7 +136,26 @@ namespace GraphWinForms
 
             Task.Run(() =>
             {
-                MessageBox.Show(EdgeInfo);
+                MessageBox.Show(VertexInfo + "\n" + EdgeInfo, "Graphic Representation");
+            });
+        }
+
+        private void test1ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var EdgeInfo = String.Empty;
+            foreach (var vertex in DrawGraph.LocalGraph.Vertices)
+            {
+                EdgeInfo += $"{vertex}: {{ ";
+                foreach (var edge in vertex.Edges)
+                {
+                    EdgeInfo += $"'{edge.ConnectedVertex}({edge.EdgeWeight})' ";
+                }
+                EdgeInfo += "}\n";
+            }
+
+            Task.Run(() =>
+            {
+                MessageBox.Show(EdgeInfo, "Local Representation");
             });
         }
     }

@@ -22,3 +22,4 @@ E:\Projects\Visual Studio\C#\GraphWinForms\GraphWinForms\bin\Debug\Graph Builder
 E:\Projects\Visual Studio\C#\GraphWinForms\GraphWinForms\bin\Debug\Graph Builder.pdb
 E:\Projects\Visual Studio\C#\GraphWinForms\GraphWinForms\obj\Debug\Graph Builder.exe
 E:\Projects\Visual Studio\C#\GraphWinForms\GraphWinForms\obj\Debug\Graph Builder.pdb
+E:\Projects\Visual Studio\C#\GraphWinForms\GraphWinForms\obj\Debug\GraphWinForms.About.resources

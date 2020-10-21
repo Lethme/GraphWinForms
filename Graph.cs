@@ -4,8 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Graph
+namespace GraphWinForms
 {
+    /// <summary>
+    /// Ориентация ребра графа
+    /// </summary>
+    public enum EdgeOrientation
+    {
+        Single,
+        Binary
+    }
     /// <summary>
     /// Ребро графа
     /// </summary>
@@ -166,14 +174,26 @@ namespace Graph
         /// <param name="firstName">Имя первой вершины</param>
         /// <param name="secondName">Имя второй вершины</param>
         /// <param name="weight">Вес ребра соединяющего вершины</param>
-        public void AddEdge(string firstName, string secondName, int weight)
+        public void AddEdge(string firstName, string secondName, int weight, EdgeOrientation orientation = EdgeOrientation.Binary)
         {
             var FirstVertex = FindVertex(firstName);
             var SecondVertex = FindVertex(secondName);
             if (SecondVertex != null && FirstVertex != null)
             {
-                FirstVertex.AddEdge(SecondVertex, weight);
-                SecondVertex.AddEdge(FirstVertex, weight);
+                switch (orientation)
+                {
+                    case EdgeOrientation.Single:
+                        {
+                            FirstVertex.AddEdge(SecondVertex, weight);
+                            break;
+                        }
+                    case EdgeOrientation.Binary:
+                        {
+                            FirstVertex.AddEdge(SecondVertex, weight);
+                            SecondVertex.AddEdge(FirstVertex, weight);
+                            break;
+                        }
+                }
             }
         }
         /// <summary>
@@ -205,6 +225,16 @@ namespace Graph
                 RemoveEdge(vertex.Name, vertex.Edges[0].ConnectedVertex.Name);
             }
             Vertices.Remove(vertex);
+        }
+        /// <summary>
+        /// Удаление всего графа
+        /// </summary>
+        public void Clear()
+        {
+            while (Vertices.Count != 0)
+            {
+                RemoveVertex(Vertices[0].Name);
+            }
         }
         /// <summary>
         /// Кратчайший путь по алгоритму Дейкстры
