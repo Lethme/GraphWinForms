@@ -43,21 +43,33 @@ namespace GraphWinForms
             PreviousVertex = null;
         }
     }
+    /// <summary>
+    /// Класс для хранения результатов работы алгоритма Дейкстры
+    /// </summary>
     public class DeikstraResult
     {
-        public string ShortestPath { get; private set; }
+        /// <summary>
+        /// Общий вес кратчайшего пути
+        /// </summary>
         public int ShortestPathWeight { get; private set; }
-        public List<string> Path { get; private set; }
-        public DeikstraResult(string shortestPath, int shortestPathWeight)
+        /// <summary>
+        /// Список имён вершин, составляющих кратчайший путь
+        /// </summary>
+        public List<string> ShortestPath { get; private set; }
+        /// <summary>
+        /// Конструктор
+        /// </summary>
+        /// <param name="shortestPath">Кратчайший путь</param>
+        /// <param name="shortestPathWeight">Вес кратчайшего пути</param>
+        public DeikstraResult(List<string> shortestPath, int shortestPathWeight)
         {
-            ShortestPath = shortestPath;
             ShortestPathWeight = shortestPathWeight;
-            Path = ShortestPath.Split('-').ToList();
+            ShortestPath = shortestPath;
         }
         public override string ToString()
         {
             var Result = "Shortest Path:\n\n";
-            foreach (var vertexName in Path)
+            foreach (var vertexName in ShortestPath)
             {
                 Result += $"{vertexName}\n";
             }
@@ -196,16 +208,16 @@ namespace GraphWinForms
         /// <param name="startVertex">Начальная вершина</param>
         /// <param name="endVertex">Конечная вершина</param>
         /// <returns>Путь</returns>
-        string GetPath(GraphVertex startVertex, GraphVertex endVertex)
+        List<string> GetPath(GraphVertex startVertex, GraphVertex endVertex)
         {
-            var path = endVertex.ToString();
-            while (startVertex != endVertex)
+            var Path = new List<string>();
+            while (endVertex != null)
             {
+                Path.Insert(0, endVertex.ToString());
                 endVertex = GetVertexInfo(endVertex).PreviousVertex;
-                path = endVertex.ToString() + '-' + path;
             }
 
-            return path;
+            return Path;
         }
     }
 }

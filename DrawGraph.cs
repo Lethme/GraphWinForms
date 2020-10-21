@@ -13,6 +13,9 @@ using Extension;
 
 namespace GraphWinForms
 {
+    /// <summary>
+    /// Represents drawing tools constants
+    /// </summary>
     public enum DrawTools
     {
         Cursor,
@@ -22,15 +25,32 @@ namespace GraphWinForms
         Delete,
         Deikstra
     }
+    /// <summary>
+    /// Represents tool selector class
+    /// </summary>
     public static class DrawTool
     {
+        /// <summary>
+        /// Current drawing tool
+        /// </summary>
         public static DrawTools CurrentTool { get; private set; } = DrawTools.Cursor;
+        /// <summary>
+        /// Base application form handler
+        /// </summary>
         public static Form1 FormHandler { get; private set; }
+        /// <summary>
+        /// Base application form handler setter method
+        /// </summary>
+        /// <param name="formHandler">Base application form handler</param>
         public static void SetFormHandler(Form1 formHandler)
         { 
             FormHandler = formHandler;
             SelectTool();
         }
+        /// <summary>
+        /// Sets drawing tool from drawing tools constants
+        /// </summary>
+        /// <param name="Tool">Drawing tool</param>
         public static void SetTool(DrawTools Tool)
         {
             if (!Enum.IsDefined(typeof(DrawTools), (int)Tool))
@@ -38,10 +58,16 @@ namespace GraphWinForms
             CurrentTool = Tool;
             SelectTool();
         }
+        /// <summary>
+        /// Removes controls focus
+        /// </summary>
         public static void LoseFocus()
         {
             FormHandler.ActiveControl = null;
         }
+        /// <summary>
+        /// Enables or disables tools controls in application form
+        /// </summary>
         private static void SelectTool()
         {
             switch (CurrentTool)
@@ -109,6 +135,11 @@ namespace GraphWinForms
             }
             LoseFocus();
         }
+        /// <summary>
+        /// Basic mouse click handler for PictureBox control
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public static void BasicDrawHandler(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
@@ -203,11 +234,15 @@ namespace GraphWinForms
                             {
                                 var firstVertexName = DrawGraph.Graph.SelectedVertices[0].Name;
                                 var secondVertexName = DrawGraph.Graph.SelectedVertices[1].Name;
+                                var result = DrawGraph.LocalGraph.FindShortestPath(firstVertexName, secondVertexName);
+
+                                DrawGraph.HighlightPath(result.ShortestPath, Color.Tomato);
                                 MessageBox.Show
                                 (
-                                    DrawGraph.LocalGraph.FindShortestPath(firstVertexName, secondVertexName).ToString(),
+                                    result.ToString(),
                                     "Shortest path with Deikstra Algorithm"
                                 );
+                                DrawGraph.UnHighlightPath();
                                 DrawGraph.RemoveSelection();
                             }
                             break;
@@ -288,28 +323,91 @@ namespace GraphWinForms
             }
         }
     }
+    /// <summary>
+    /// Default variables class
+    /// </summary>
     static public class DefaultSettings
     {
+        /// <summary>
+        /// Default vertex radius
+        /// </summary>
         public const int VertexRadius = 20;
+        /// <summary>
+        /// Default vertex radius expansion
+        /// </summary>
         public const int VertexRadiusExpansion = 100;
+        /// <summary>
+        /// Default label width modifier
+        /// </summary>
         public const int LabelWidthModifier = 5;
+        /// <summary>
+        /// Default label height modifier
+        /// </summary>
         public const int LabelHeightModifier = 2;
+        /// <summary>
+        /// Default color
+        /// </summary>
+        public static Color Color { get; private set; } = Color.Black;
+        /// <summary>
+        /// Default selection color
+        /// </summary>
+        public static Color SelectionColor { get; private set; } = Color.Red;
+        /// <summary>
+        /// Default font for vertex labels
+        /// </summary>
         public static Font VertexFont { get; private set; } = new Font("Consolas", 9);
+        /// <summary>
+        /// Default font for edge labels
+        /// </summary>
         public static Font EdgeFont { get; private set; } = new Font("Consolas", 12);
+        /// <summary>
+        /// Default string format for labels
+        /// </summary>
         public static StringFormat StringFormat { get; private set; } = new StringFormat();
+        /// <summary>
+        /// Default variables initializator
+        /// </summary>
+        /// <remarks>
+        /// You can use it for initializing data need to be stated after compiling process
+        /// </remarks>
         public static void Initialize()
         {
             StringFormat.Alignment = StringAlignment.Center;
             StringFormat.LineAlignment = StringAlignment.Center;
         }
     }
+    /// <summary>
+    /// Graphic vertex class
+    /// </summary>
     public class Vertex
     {
+        /// <summary>
+        /// X coordinate
+        /// </summary>
         public int X { get; private set; }
+        /// <summary>
+        /// Y coordinate
+        /// </summary>
         public int Y { get; private set; }
+        /// <summary>
+        /// Vertex name
+        /// </summary>
         public string Name { get; private set; }
+        /// <summary>
+        /// Vertex radius
+        /// </summary>
         public int Radius { get; private set; }
-        public Color BorderColor { get; private set; } = Color.Black;
+        /// <summary>
+        /// Vertex border color
+        /// </summary>
+        public Color BorderColor { get; private set; } = DefaultSettings.Color;
+        /// <summary>
+        /// Vertex constructor
+        /// </summary>
+        /// <param name="x">X coordinate</param>
+        /// <param name="y">Y coordinate</param>
+        /// <param name="name">Vertex name</param>
+        /// <param name="radius">Vertex radius</param>
         public Vertex(int x, int y, string name, int radius = DefaultSettings.VertexRadius)
         {
             this.X = x;
@@ -317,26 +415,46 @@ namespace GraphWinForms
             this.Name = name;
             this.Radius = radius;
         }
+        /// <summary>
+        /// Allows to change vertex border color
+        /// </summary>
+        /// <param name="borderColor">Border color</param>
         public void SetBorderColor(Color borderColor)
         {
             this.BorderColor = borderColor;
         }
+        /// <summary>
+        /// Allows to change vertex coordinates
+        /// </summary>
+        /// <param name="x">X coordinate</param>
+        /// <param name="y">Y coordinate</param>
         public void SetCoordinates(int x, int y)
         {
             if (x >= 0) this.X = x;
             if (y >= 0) this.Y = y;
         }
+        /// <summary>
+        /// Allows to change vertex radius
+        /// </summary>
+        /// <param name="radius">Vertex radius</param>
         public void SetRadius(int radius)
         {
             if (radius >= 15 && radius <= 30) this.Radius = radius;
         }
+        /// <summary>
+        /// Allows to change vertex name
+        /// </summary>
+        /// <param name="name">Vertex name</param>
         public void SetName(string name)
         {
             if (name != String.Empty) this.Name = name;
         }
+        /// <summary>
+        /// Selects vertex
+        /// </summary>
         public void Select()
         {
-            SetBorderColor(Color.Red);
+            SetBorderColor(DefaultSettings.SelectionColor);
             if (DrawGraph.Graph.SelectedVertices.Contains(this)) Unselect();
             else
             {
@@ -344,12 +462,20 @@ namespace GraphWinForms
                 DrawGraph.RedrawSheet();
             }
         }
+        /// <summary>
+        /// Unselects vertex
+        /// </summary>
         public void Unselect()
         {
-            SetBorderColor(Color.Black);
+            SetBorderColor(DefaultSettings.Color);
             DrawGraph.Graph.SelectedVertices.Remove(this);
             DrawGraph.RedrawSheet();
         }
+        /// <summary>
+        /// Basic vertex comparison method
+        /// </summary>
+        /// <param name="vertex">Vertex to compare with</param>
+        /// <returns></returns>
         public bool Equals(Vertex vertex)
         {
             if 
@@ -366,21 +492,52 @@ namespace GraphWinForms
         }
         public override string ToString() => Name;
     }
+    /// <summary>
+    /// Graphic edge class
+    /// </summary>
     public class Edge
     {
+        /// <summary>
+        /// First vertex that current edge basing on
+        /// </summary>
         public Vertex FirstVertex { get; private set; }
+        /// <summary>
+        /// Second vertex that current edge basing on
+        /// </summary>
         public Vertex SecondVertex { get; private set; }
+        /// <summary>
+        /// Edge weight
+        /// </summary>
         public int Weight { get; private set; }
+        /// <summary>
+        /// Edge color
+        /// </summary>
+        public Color Color { get; private set; } = DefaultSettings.Color;
+        /// <summary>
+        /// Edge constructor
+        /// </summary>
+        /// <param name="firstVertex">First vertex that current edge basing on</param>
+        /// <param name="secondVertex">Second vertex that current edge basing on</param>
+        /// <param name="weight">Edge weight</param>
         public Edge (Vertex firstVertex, Vertex secondVertex, int weight)
         {
             this.FirstVertex = firstVertex;
             this.SecondVertex = secondVertex;
             this.Weight = weight;
         }
+        /// <summary>
+        /// Allows to change edge weight
+        /// </summary>
+        /// <param name="weight">Edge weight</param>
         public void SetWeight(int weight)
         {
             if (weight >= 0) this.Weight = weight;
         }
+        /// <summary>
+        /// Allows to change edge vertices
+        /// </summary>
+        /// <param name="firstVertex">First vertex that current edge basing on</param>
+        /// <param name="secondVertex">Second vertex that current edge basing onparam>
         public void SetVertices(Vertex firstVertex, Vertex secondVertex)
         {
             if (!Utils.Equals(firstVertex, secondVertex))
@@ -389,31 +546,86 @@ namespace GraphWinForms
                 SecondVertex = secondVertex;
             }
         }
+        /// <summary>
+        /// Allows to change edge color
+        /// </summary>
+        /// <param name="color">Color</param>
+        public void SetColor(Color color)
+        {
+            Color = color;
+        }
+        /// <summary>
+        /// Checking if current edge contains stated vertex
+        /// </summary>
+        /// <param name="vertex">Vertex to check</param>
+        /// <returns>Returns <c>true</c> if current edge contains stated vertex and <c>false</c> otherwise</returns>
         public bool ContainsVertex(Vertex vertex)
         {
             return JsonConvert.SerializeObject(FirstVertex) == JsonConvert.SerializeObject(vertex) ||
                    JsonConvert.SerializeObject(SecondVertex) == JsonConvert.SerializeObject(vertex);
         }
+        /// <summary>
+        /// Updates vertex information in current edge
+        /// </summary>
+        /// <param name="vertex">Vertex to update</param>
+        /// <param name="vertexName">Vertex name</param>
         public void UpdateVertex(Vertex vertex, string vertexName)
         {
             if (Utils.Equals(FirstVertex, vertex)) FirstVertex.SetName(vertexName);
             if (Utils.Equals(SecondVertex, vertex)) SecondVertex.SetName(vertexName);
         }
     }
+    /// <summary>
+    /// Graphic data class
+    /// </summary>
     public class GraphData
     {
+        /// <summary>
+        /// Used if vertex name is not stated on creating vertex (it's not being used currently)
+        /// </summary>
         public int CurrentNumber { get; set; } = 1;
+        /// <summary>
+        /// Vertices list
+        /// </summary>
         public List<Vertex> Vertices { get; private set; } = new List<Vertex>();
+        /// <summary>
+        /// Selected vertices list
+        /// </summary>
         public List<Vertex> SelectedVertices { get; private set; } = new List<Vertex>();
+        /// <summary>
+        /// Edges list
+        /// </summary>
         public List<Edge> Edges { get; private set; } = new List<Edge>();
     }
+    /// <summary>
+    /// Graph drawing class
+    /// </summary>
     public static class DrawGraph
     {
+        /// <summary>
+        /// Graphics unit handler
+        /// </summary>
         private static Graphics Graphics { get; set; }
+        /// <summary>
+        /// PictureBox hangler
+        /// </summary>
         public static PictureBox PictureBox { get; private set; }
+        /// <summary>
+        /// Bitmap for drawing
+        /// </summary>
         public static Bitmap GraphBitmap { get; private set; }
+        /// <summary>
+        /// Graphic graph data object
+        /// </summary>
         public static GraphData Graph { get; private set; } = new GraphData();
+        /// <summary>
+        /// Local graph data object
+        /// </summary>
         public static Graph LocalGraph { get; private set; } = new Graph();
+        /// <summary>
+        /// Basic initialization method
+        /// </summary>
+        /// <param name="pictureBox">PictureBox handler</param>
         public static void CreateGraphics(PictureBox pictureBox)
         {
             if (pictureBox == null) throw new NullReferenceException();
@@ -425,6 +637,9 @@ namespace GraphWinForms
             ClearSheet();
             pictureBox.MouseClick += new MouseEventHandler(DrawTool.BasicDrawHandler);
         }
+        /// <summary>
+        /// Redraws graph
+        /// </summary>
         public static void RedrawSheet()
         {
             ClearSheet();
@@ -438,6 +653,10 @@ namespace GraphWinForms
             }
             UpdateSheet();
         }
+        /// <summary>
+        /// Sets graphic graph data object
+        /// </summary>
+        /// <param name="graph"></param>
         private static void SetGraphData(GraphData graph)
         {
             if (graph != null)
@@ -447,6 +666,9 @@ namespace GraphWinForms
                 InitializeLocalGraph();
             }
         }
+        /// <summary>
+        /// Builds local graph
+        /// </summary>
         private static void InitializeLocalGraph()
         {
             foreach (var vertex in Graph.Vertices)
@@ -458,15 +680,24 @@ namespace GraphWinForms
                 LocalGraph.AddEdge(edge.FirstVertex.Name, edge.SecondVertex.Name, edge.Weight);
             }
         }
+        /// <summary>
+        /// Clear bitmap
+        /// </summary>
         private static void ClearSheet()
         {
             Graphics.Clear(Color.White);
             UpdateSheet();
         }
+        /// <summary>
+        /// Applies current bitmap
+        /// </summary>
         private static void UpdateSheet()
         {
             PictureBox.Image = GraphBitmap;
         }
+        /// <summary>
+        /// Clear whole graph
+        /// </summary>
         public static void ClearGraph()
         {
             Graph.Vertices.Clear();
@@ -476,16 +707,37 @@ namespace GraphWinForms
             LocalGraph.Clear();
             ClearSheet();
         }
+        /// <summary>
+        /// Graph savig type constants
+        /// </summary>
         public enum SaveType
         {
+            /// <summary>
+            /// Saving methods will show all the dialogs
+            /// </summary>
             Normal,
+            /// <summary>
+            /// Saving methods won't show any dialogs
+            /// </summary>
             Silent
         }
+        /// <summary>
+        /// Graph loading type constants
+        /// </summary>
         public enum LoadType
         {
+            /// <summary>
+            /// Loading methods will show all the dialogs
+            /// </summary>
             Normal,
+            /// <summary>
+            /// Loading methods won't show any dialogs
+            /// </summary>
             Silent
         }
+        /// <summary>
+        /// Represents saving graph as image method
+        /// </summary>
         public static void SaveGraphAsImage()
         {
             if (PictureBox.Image != null)
@@ -513,7 +765,11 @@ namespace GraphWinForms
                 }
             }
         }
-        public static void SaveGraphAsGWFFile()
+        /// <summary>
+        /// Represents saving graph as json string with saving dialog method
+        /// </summary>
+        /// <param name="Type">Saving type</param>
+        public static void SaveGraphAsGWFFile(SaveType Type = SaveType.Normal)
         {
             if (Graph.SelectedVertices.Count > 0) RemoveSelection();
             using (var saveDialog = new SaveFileDialog())
@@ -525,10 +781,15 @@ namespace GraphWinForms
                 saveDialog.ShowHelp = true;
                 if (saveDialog.ShowDialog() == DialogResult.OK)
                 {
-                    SaveGraphAsGWFFile(saveDialog.FileName);
+                    SaveGraphAsGWFFile(saveDialog.FileName, Type);
                 }
             }
         }
+        /// <summary>
+        /// Represents saving graph as json string without saving dialog method
+        /// </summary>
+        /// <param name="FileName">Path to file to save data</param>
+        /// <param name="Type">Saving type</param>
         public static void SaveGraphAsGWFFile(string FileName, SaveType Type = SaveType.Normal)
         {
             try
@@ -549,7 +810,11 @@ namespace GraphWinForms
                 }
             }
         }
-        public static void LoadGraphFromGWFFile()
+        /// <summary>
+        /// Represents loading graph from json string with loading dialog method
+        /// </summary>
+        /// <param name="Type">Loading type</param>
+        public static void LoadGraphFromGWFFile(LoadType Type = LoadType.Normal)
         {
             using (var openDialog = new OpenFileDialog())
             {
@@ -559,7 +824,7 @@ namespace GraphWinForms
                 openDialog.ShowHelp = true;
                 if (openDialog.ShowDialog() == DialogResult.OK)
                 {
-                    var loadGraph = ReadJsonFromLocalFile(openDialog.FileName);
+                    var loadGraph = ReadJsonFromLocalFile(openDialog.FileName, Type);
                     if (loadGraph != null)
                     {
                         SetGraphData(loadGraph);
@@ -568,15 +833,26 @@ namespace GraphWinForms
                 }
             }
         }
-        public static void LoadGraphFromGWFFile(string FileName)
+        /// <summary>
+        /// Represents loading graph from json string without loading dialog method
+        /// </summary>
+        /// <param name="FileName">Path to file to load data</param>
+        /// <param name="Type">Loading type</param>
+        public static void LoadGraphFromGWFFile(string FileName, LoadType Type = LoadType.Normal)
         {
-            var loadGraph = ReadJsonFromLocalFile(FileName);
+            var loadGraph = ReadJsonFromLocalFile(FileName, Type);
             if (loadGraph != null)
             {
                 SetGraphData(loadGraph);
                 RedrawSheet();
             }
         }
+        /// <summary>
+        /// Reads json string from stated file
+        /// </summary>
+        /// <param name="FileName">Path to file to read data</param>
+        /// <param name="Type">Loading type</param>
+        /// <returns>Graphic graph data object</returns>
         private static GraphData ReadJsonFromLocalFile(string FileName, LoadType Type = LoadType.Normal)
         {
             try
@@ -596,6 +872,13 @@ namespace GraphWinForms
                 return null;
             }
         }
+        /// <summary>
+        /// Check vertex existence by it's coordinates
+        /// </summary>
+        /// <param name="xPos">Vertex x coordinate</param>
+        /// <param name="yPos">Vertex y cooddinate</param>
+        /// <param name="vertexRadiusExpansion">Allows to extend searching area near any vertex</param>
+        /// <returns>Returns <c>true</c> if any vertex exists under stated coordinates and <c>false</c> otherwise</returns>
         public static bool IsVertexExist(int xPos, int yPos, int vertexRadiusExpansion = 0)
         {
             foreach (var vertex in Graph.Vertices)
@@ -606,6 +889,11 @@ namespace GraphWinForms
             }
             return false;
         }
+        /// <summary>
+        /// Check vertex existence by it's name
+        /// </summary>
+        /// <param name="vertexName">Vertex name</param>
+        /// <returns>Returns <c>true</c> if vertex with the same name exists and <c>false</c> otherwise</returns>
         public static bool IsVertexExist(string vertexName)
         {
             foreach (var vertex in Graph.Vertices)
@@ -614,6 +902,12 @@ namespace GraphWinForms
             }
             return false;
         }
+        /// <summary>
+        /// Check edge between two vertices existence
+        /// </summary>
+        /// <param name="firstVertexName">First vertex name</param>
+        /// <param name="secondVertexName">Second vertex name</param>
+        /// <returns>Returns <c>true</c> if edge between two vertices stated by their names exists and <c>false</c> otherwise</returns>
         public static bool IsEdgeExist(string firstVertexName, string secondVertexName)
         {
             if (firstVertexName != secondVertexName)
@@ -627,6 +921,13 @@ namespace GraphWinForms
             }
             return false;
         }
+        /// <summary>
+        /// Allows to get vertex by it's coordinates
+        /// </summary>
+        /// <param name="xPos">Vertex x coordinate</param>
+        /// <param name="yPos">Vertex y coordinate</param>
+        /// <param name="vertexRadiusExpansion">Allows to extend searching area near any vertex</param>
+        /// <returns>Returns vertex handler if vertex was found and <c>null</c> reference otherwise</returns>
         public static Vertex GetVertexByCoordinates(int xPos, int yPos, int vertexRadiusExpansion = 0)
         {
             foreach (var vertex in Graph.Vertices)
@@ -637,6 +938,11 @@ namespace GraphWinForms
             }
             return null;
         }
+        /// <summary>
+        /// Allows to get vertex by it's name
+        /// </summary>
+        /// <param name="vertexName">Vertex name</param>
+        /// <returns>Returns vertex handler if vertex was found and <c>null</c> reference otherwise</returns>
         public static Vertex GetVertexByName(string vertexName)
         {
             foreach (var vertex in Graph.Vertices)
@@ -645,6 +951,12 @@ namespace GraphWinForms
             }
             return null;
         }
+        /// <summary>
+        /// Allows to get edge by it's vertex names
+        /// </summary>
+        /// <param name="firstVertexName">First vertex name</param>
+        /// <param name="secondVertexName">Second vertex name</param>
+        /// <returns>Returns edge handler if edge was found and <c>null</c> reference otherwise</returns>
         public static Edge GetEdgeByVerticesNames(string firstVertexName, string secondVertexName)
         {
             if (firstVertexName != secondVertexName)
@@ -658,6 +970,12 @@ namespace GraphWinForms
             }
             return null;
         }
+        /// <summary>
+        /// Allows to get edge by it's vertices
+        /// </summary>
+        /// <param name="firstVertex">First vertex</param>
+        /// <param name="secondVertex">Second vertex</param>
+        /// <returns>Returns edge handler if edge was found and <c>null</c> reference otherwise</returns>
         public static Edge GetEdgeByVertices(Vertex firstVertex, Vertex secondVertex)
         {
             if (!Utils.Equals(firstVertex, secondVertex))
@@ -671,6 +989,12 @@ namespace GraphWinForms
             }
             return null;
         }
+        /// <summary>
+        /// Adds a new vertex to graph
+        /// </summary>
+        /// <param name="xPos">Vertex x coordinate</param>
+        /// <param name="yPos">Vertex y coordinate</param>
+        /// <param name="name">Vertex name</param>
         public static void AddVertex(int xPos, int yPos, string name = "")
         {
             if (!IsVertexExist(xPos, yPos, DefaultSettings.VertexRadiusExpansion))
@@ -683,6 +1007,12 @@ namespace GraphWinForms
                 }
             }
         }
+        /// <summary>
+        /// Adds a new edge to graph
+        /// </summary>
+        /// <param name="firstVertexName">First vertex name</param>
+        /// <param name="secondVertexName">Second vertex name</param>
+        /// <param name="weight">Edge weight</param>
         public static void AddEdge(string firstVertexName, string secondVertexName, int weight)
         {
             if (firstVertexName != secondVertexName && weight > 0 && !IsEdgeExist(firstVertexName, secondVertexName))
@@ -699,6 +1029,15 @@ namespace GraphWinForms
         ////////////////////////////////////////////////
         // Have to add Editing methods to Graph class //
         ////////////////////////////////////////////////
+        /// <summary>
+        /// Edits vertex data
+        /// </summary>
+        /// <param name="xPos">Vertex x coordinate</param>
+        /// <param name="yPos">Vertex y coordinate</param>
+        /// <param name="newName">Vertex name</param>
+        /// <param name="newX">New vertex x coordinate</param>
+        /// <param name="newY">New vertex y coordinate</param>
+        /// <param name="newRadius">Vertex radius</param>
         public static void EditVertex(int xPos, int yPos, string newName, int newX = -1, int newY = -1, int newRadius = DefaultSettings.VertexRadius)
         {
             var vertex = GetVertexByCoordinates(xPos, yPos);
@@ -719,6 +1058,14 @@ namespace GraphWinForms
                 vertex.SetRadius(newRadius);
             }
         }
+        /// <summary>
+        /// Edits vertex data
+        /// </summary>
+        /// <param name="vertex">Vertex</param>
+        /// <param name="newName">Vertex name</param>
+        /// <param name="newX">New vertex x coordinate</param>
+        /// <param name="newY">New vertex y coordinate</param>
+        /// <param name="newRadius">Vertex radius</param>
         public static void EditVertex(Vertex vertex, string newName, int newX = -1, int newY = -1, int newRadius = DefaultSettings.VertexRadius)
         {
             if (vertex != null)
@@ -738,6 +1085,11 @@ namespace GraphWinForms
                 vertex.SetRadius(newRadius);
             }
         }
+        /// <summary>
+        /// Edit edge data
+        /// </summary>
+        /// <param name="edge">Edge</param>
+        /// <param name="weight">Edge weight</param>
         private static void EditEdge(Edge edge, int weight)
         {
             if (edge != null)
@@ -745,16 +1097,32 @@ namespace GraphWinForms
                 edge.SetWeight(weight);
             }
         }
+        /// <summary>
+        /// Edit edge data
+        /// </summary>
+        /// <param name="firstVertex">First vertex</param>
+        /// <param name="secondVertex">Second vertex</param>
+        /// <param name="weight">Edge weight</param>
         public static void EditEdge(Vertex firstVertex, Vertex secondVertex, int weight)
         {
             var Edge = GetEdgeByVertices(firstVertex, secondVertex);
             EditEdge(Edge, weight);
         }
+        /// <summary>
+        /// Edit edge data
+        /// </summary>
+        /// <param name="firstVertexName">First vertex name</param>
+        /// <param name="secondVertexName">Second vertex name</param>
+        /// <param name="weight">Edge weight</param>
         public static void EditEdge(string firstVertexName, string secondVertexName, int weight)
         {
             var Edge = GetEdgeByVerticesNames(firstVertexName, secondVertexName);
             EditEdge(Edge, weight);
         }
+        /// <summary>
+        /// Removes edge from graph
+        /// </summary>
+        /// <param name="edge">Edge</param>
         public static void RemoveEdge(Edge edge)
         {
             if (edge != null)
@@ -763,16 +1131,30 @@ namespace GraphWinForms
                 LocalGraph.RemoveEdge(edge.FirstVertex.Name, edge.SecondVertex.Name);
             }
         }
+        /// <summary>
+        /// Removes edge from graph
+        /// </summary>
+        /// <param name="firstVertex">First vertex</param>
+        /// <param name="secondVertex">Second vertex</param>
         public static void RemoveEdge(Vertex firstVertex, Vertex secondVertex)
         {
             var Edge = GetEdgeByVertices(firstVertex, secondVertex);
             RemoveEdge(Edge);
         }
+        /// <summary>
+        /// Removes edge from graph
+        /// </summary>
+        /// <param name="firstVertexName">First vertex name</param>
+        /// <param name="secondVertexName">Second vertex name</param>
         public static void RemoveEdge(string firstVertexName, string secondVertexName)
         {
             var Edge = GetEdgeByVerticesNames(firstVertexName, secondVertexName);
             RemoveEdge(Edge);
         }
+        /// <summary>
+        /// Removes vertex from graph
+        /// </summary>
+        /// <param name="vertex">Vertex</param>
         public static void RemoveVertex(Vertex vertex)
         {
             var EdgesToDelete = new List<Edge>();
@@ -787,10 +1169,17 @@ namespace GraphWinForms
             Graph.Vertices.Remove(vertex);
             LocalGraph.RemoveVertex(vertex.Name);
         }
+        /// <summary>
+        /// Selects stated vertex
+        /// </summary>
+        /// <param name="vertex">Vertex</param>
         public static void SelectVertex(Vertex vertex)
         {
             vertex.Select();
         }
+        /// <summary>
+        /// Unselects all selected vertices
+        /// </summary>
         public static void RemoveSelection()
         {
             foreach (var vertex in Graph.Vertices)
@@ -798,6 +1187,63 @@ namespace GraphWinForms
                 vertex.Unselect();
             }
         }
+        /// <summary>
+        /// Sets borders color to stated list of vertices
+        /// </summary>
+        /// <param name="verticesNames">List of vertices</param>
+        /// <param name="color">Border color</param>
+        public static void HighlightPath(List<string> verticesNames, Color color)
+        {
+            if (verticesNames != null && verticesNames.Count > 1)
+            {
+                foreach (var vertexName in verticesNames)
+                {
+                    var vertex = GetVertexByName(vertexName);
+                    if (vertex != null)
+                    {
+                        vertex.SetBorderColor(color);
+                    }
+                }
+                for (var i = 0; i < verticesNames.Count - 1; i++)
+                {
+                    var Edge = GetEdgeByVerticesNames(verticesNames[i], verticesNames[i + 1]);
+                    if (Edge != null)
+                    {
+                        Edge.SetColor(color);
+                    }
+                }
+
+                RedrawSheet();
+            }
+        }
+        /// <summary>
+        /// Sets borders color of all vertives to default color
+        /// </summary>
+        public static void UnHighlightPath()
+        {
+            int count = 0;
+            foreach (var vertex in Graph.Vertices)
+            {
+                if (vertex.BorderColor != DefaultSettings.Color)
+                {
+                    vertex.SetBorderColor(DefaultSettings.Color);
+                    count++;
+                }
+            }
+            foreach (var edge in Graph.Edges)
+            {
+                if (edge.Color != DefaultSettings.Color)
+                {
+                    edge.SetColor(DefaultSettings.Color);
+                }
+            }
+
+            if (count > 0) RedrawSheet();
+        }
+        /// <summary>
+        /// Draws stated vertex
+        /// </summary>
+        /// <param name="vertex">Vertex</param>
         private static void DrawVertex(Vertex vertex)
         {
             Graphics.FillEllipse
@@ -810,7 +1256,7 @@ namespace GraphWinForms
             );
             Graphics.DrawEllipse
             (
-                new Pen(vertex.BorderColor),
+                new Pen(vertex.BorderColor, 2),
                 vertex.X - vertex.Radius,
                 vertex.Y - vertex.Radius,
                 2 * vertex.Radius,
@@ -838,11 +1284,15 @@ namespace GraphWinForms
                 DefaultSettings.StringFormat
             );
         }
+        /// <summary>
+        /// Draws stated edge
+        /// </summary>
+        /// <param name="edge">Edge</param>
         private static void DrawEdge(Edge edge)
         {
             Graphics.DrawLine
             (
-                new Pen(Color.Black, 2),
+                new Pen(edge.Color, 2),
                 new Point(edge.FirstVertex.X, edge.FirstVertex.Y),
                 new Point(edge.SecondVertex.X, edge.SecondVertex.Y)
             );
@@ -872,6 +1322,13 @@ namespace GraphWinForms
     }
     public static class Utils
     {
+        /// <summary>
+        /// Allows to show basic Yes/No dialog
+        /// </summary>
+        /// <param name="ConfirmationText">Text shown within dialog</param>
+        /// <param name="ConfirmationTitle">Text shown in dialog title</param>
+        /// <param name="DefaultButton">Default selected dialog button</param>
+        /// <returns>Returns <c>true</c> if user clicked Yes button and <c>false</c> otherwise</returns>
         public static bool Confirmation(string ConfirmationText, string ConfirmationTitle, MessageBoxDefaultButton DefaultButton = MessageBoxDefaultButton.Button1)
         {
             if (ConfirmationText == String.Empty || ConfirmationTitle == String.Empty)
@@ -889,12 +1346,19 @@ namespace GraphWinForms
             if (ConfirmationResult == DialogResult.Yes) return true;
             return false;
         }
+        /// <summary>
+        /// Check if application has administrator rights
+        /// </summary>
+        /// <returns>Returns <c>true</c> if application has administrator right and <c>false</c> otherwise</returns>
         public static bool IsAdministrator()
         {
             WindowsIdentity identity = WindowsIdentity.GetCurrent();
             WindowsPrincipal principal = new WindowsPrincipal(identity);
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
+        /// <summary>
+        /// Associates application extension with files
+        /// </summary>
         public static void AssociateExtension()
         {
             if (!FileAssociation.IsAssociated)
@@ -913,6 +1377,9 @@ namespace GraphWinForms
                     );
             }
         }
+        /// <summary>
+        /// Unassociates application extension with files
+        /// </summary>
         public static void UnAssociateExtension()
         {
             if (FileAssociation.IsAssociated)
@@ -933,6 +1400,12 @@ namespace GraphWinForms
                 }
             }
         }
+        /// <summary>
+        /// Represents equation checking method
+        /// </summary>
+        /// <param name="firstObject">First object</param>
+        /// <param name="secondObject">Second object</param>
+        /// <returns>Return <c>true</c> if objects are equal and <c>false</c> otherwise</returns>
         public static bool Equals(object firstObject, object secondObject)
         {
             return JsonConvert.SerializeObject(firstObject) == JsonConvert.SerializeObject(secondObject);
