@@ -156,15 +156,19 @@ namespace GraphWinForms
                         {
                             if (!DrawGraph.IsVertexExist(e.X, e.Y, DefaultSettings.VertexRadiusExpansion))
                             {
-                                using (var inputDialog = new InputDialog("Input vertex name", "Vertex name", InputDialog.DialogType.Text))
+                                var Line = Utils.ShowInputDialog
+                                (
+                                    "Input vertex name",
+                                    "Vertex name",
+                                    InputDialog.DialogType.Text
+                                );
+                                DrawGraph.AddVertex(e.X, e.Y, Line);
+                                DrawGraph.RedrawSheet();
+                                /*if (Line != String.Empty)
                                 {
-                                    inputDialog.ShowDialog();
-                                    if (inputDialog.Line != String.Empty)
-                                    {
-                                        DrawGraph.AddVertex(e.X, e.Y, inputDialog.Line);
-                                        DrawGraph.RedrawSheet();
-                                    }
-                                }
+                                    DrawGraph.AddVertex(e.X, e.Y, Line);
+                                    DrawGraph.RedrawSheet();
+                                }*/
                             }
                             break;
                         }
@@ -179,13 +183,20 @@ namespace GraphWinForms
                             {
                                 if (!DrawGraph.IsEdgeExist(DrawGraph.Graph.SelectedVertices[0].Name, DrawGraph.Graph.SelectedVertices[1].Name))
                                 {
-                                    using (var inputDialog = new InputDialog("Input edge weight", "Edge weight", InputDialog.DialogType.IntNumber))
+                                    var Line = Utils.ShowInputDialog
+                                    (
+                                        "Change vertex name",
+                                        "Vertex name",
+                                        InputDialog.DialogType.Text
+                                    );
+                                    if (Line != String.Empty)
                                     {
-                                        inputDialog.ShowDialog();
-                                        if (inputDialog.Line != String.Empty)
-                                        {
-                                            DrawGraph.AddEdge(DrawGraph.Graph.SelectedVertices[0].Name, DrawGraph.Graph.SelectedVertices[1].Name, Int32.Parse(inputDialog.Line));
-                                        }
+                                        DrawGraph.AddEdge
+                                        (
+                                            DrawGraph.Graph.SelectedVertices[0].Name,
+                                            DrawGraph.Graph.SelectedVertices[1].Name,
+                                            Int32.Parse(Line)
+                                        );
                                     }
                                 }
                                 DrawGraph.RemoveSelection();
@@ -198,14 +209,16 @@ namespace GraphWinForms
                             var vertex = DrawGraph.GetVertexByCoordinates(e.X, e.Y);
                             if (vertex != null)
                             {
-                                using (var inputDialog = new InputDialog("Change vertex name", "Vertex name", InputDialog.DialogType.Text))
+                                var Line = Utils.ShowInputDialog
+                                (
+                                    "Change vertex name",
+                                    "Vertex name",
+                                    InputDialog.DialogType.Text
+                                );
+                                if (Line != String.Empty)
                                 {
-                                    inputDialog.ShowDialog();
-                                    if (inputDialog.Line != String.Empty)
-                                    {
-                                        DrawGraph.EditVertex(vertex, inputDialog.Line);
-                                        DrawGraph.RedrawSheet();
-                                    }
+                                    DrawGraph.EditVertex(vertex, Line);
+                                    DrawGraph.RedrawSheet();
                                 }
                             }
                             break;
@@ -255,6 +268,17 @@ namespace GraphWinForms
                 {
                     case DrawTools.Cursor:
                         {
+                            var vertex = DrawGraph.GetVertexByCoordinates(e.X, e.Y);
+                            if (vertex != null) vertex.Select();
+                            DrawGraph.RedrawSheet();
+
+                            var Message = String.Empty;
+                            foreach (var connectedVertex in DrawGraph.LocalGraph.GetConnectedVertices(vertex.Name))
+                            {
+                                Message += $"{connectedVertex.Name}\n";
+                            }
+                            MessageBox.Show(Message);
+                            DrawGraph.RemoveSelection();
                             break;
                         }
                     case DrawTools.Vertex:
@@ -276,15 +300,17 @@ namespace GraphWinForms
                             {
                                 if (DrawGraph.IsEdgeExist(DrawGraph.Graph.SelectedVertices[0].Name, DrawGraph.Graph.SelectedVertices[1].Name))
                                 {
-                                    using (var inputDialog = new InputDialog("Change edge weight", "Edge weight", InputDialog.DialogType.IntNumber))
+                                    var Line = Utils.ShowInputDialog
+                                    (
+                                        "Change edge weight",
+                                        "Edge weight",
+                                        InputDialog.DialogType.IntNumber
+                                    );
+                                    if (Line != String.Empty)
                                     {
-                                        inputDialog.ShowDialog();
-                                        if (inputDialog.Line != String.Empty)
-                                        {
-                                            var firstVertex = DrawGraph.Graph.SelectedVertices[0];
-                                            var secondVertex = DrawGraph.Graph.SelectedVertices[1];
-                                            DrawGraph.EditEdge(firstVertex, secondVertex, Int32.Parse(inputDialog.Line));
-                                        }
+                                        var firstVertex = DrawGraph.Graph.SelectedVertices[0];
+                                        var secondVertex = DrawGraph.Graph.SelectedVertices[1];
+                                        DrawGraph.EditEdge(firstVertex, secondVertex, Int32.Parse(Line));
                                     }
                                 }
                                 DrawGraph.RemoveSelection();
@@ -1002,11 +1028,12 @@ namespace GraphWinForms
         {
             if (!IsVertexExist(xPos, yPos, DefaultSettings.VertexRadiusExpansion))
             {
-                var Name = name == String.Empty ? Graph.CurrentNumber++.ToString() : name;
+                var Name = name == String.Empty ? Graph.CurrentNumber.ToString() : name;
                 if (!IsVertexExist(Name))
                 {
                     Graph.Vertices.Add(new Vertex(xPos, yPos, Name));
                     LocalGraph.AddVertex(Name);
+                    Graph.CurrentNumber++;
                 }
             }
         }
@@ -1358,6 +1385,21 @@ namespace GraphWinForms
 
             if (ConfirmationResult == DialogResult.Yes) return true;
             return false;
+        }
+        /// <summary>
+        /// Shows input dialog form
+        /// </summary>
+        /// <param name="inputDialogTitle">Dialog title</param>
+        /// <param name="inputDialogText">Dialog text</param>
+        /// <param name="Type">Dialog type</param>
+        /// <returns>Line that user entered in dialog</returns>
+        public static string ShowInputDialog(string inputDialogTitle, string inputDialogText, InputDialog.DialogType Type = InputDialog.DialogType.Text)
+        {
+            using (var inputDialog = new InputDialog(inputDialogTitle, inputDialogText, Type))
+            {
+                inputDialog.ShowDialog();
+                return inputDialog.Line;
+            }
         }
         /// <summary>
         /// Check if application has administrator rights

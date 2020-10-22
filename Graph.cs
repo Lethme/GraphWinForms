@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 
 namespace GraphWinForms
@@ -69,6 +70,21 @@ namespace GraphWinForms
         /// </summary>
         public List<GraphEdge> Edges { get; }
         /// <summary>
+        /// List of vertices connected to current vertex
+        /// </summary>
+        public List<GraphVertex> ConnectedVertices 
+        { 
+            get
+            {
+                var List = new List<GraphVertex>();
+                foreach (var edge in Edges)
+                {
+                    List.Add(edge.ConnectedVertex);
+                }
+                return List;
+            }
+        }
+        /// <summary>
         /// Конструктор
         /// </summary>
         /// <param name="vertexName">Название вершины</param>
@@ -132,6 +148,14 @@ namespace GraphWinForms
         {
             Vertices = new List<GraphVertex>();
         }
+        public void Sort()
+        {
+            Vertices.Sort((x, y) => x.Name.CompareTo(y.Name));
+            foreach (var vertex in Vertices)
+            {
+                vertex.Edges.Sort((x, y) => x.ConnectedVertex.Name.CompareTo(y.ConnectedVertex.Name));
+            }
+        }
         /// <summary>
         /// Добавление вершины
         /// </summary>
@@ -139,6 +163,7 @@ namespace GraphWinForms
         public void AddVertex(string vertexName)
         {
             Vertices.Add(new GraphVertex(vertexName));
+            Sort();
         }
         /// <summary>
         /// Поиск вершины
@@ -217,6 +242,7 @@ namespace GraphWinForms
                             break;
                         }
                 }
+                Sort();
             }
         }
         /// <summary>
@@ -226,7 +252,7 @@ namespace GraphWinForms
         /// <param name="newName">Новое имя вершины</param>
         public void EditVertex(string currentName, string newName)
         {
-            FindVertex(currentName).SetName(newName);
+            var vert = FindVertex(currentName);
             foreach (var vertex in Vertices)
             {
                 foreach (var edge in vertex.Edges)
@@ -235,6 +261,11 @@ namespace GraphWinForms
                         edge.SetVertex(FindVertex(newName));
                 }
             }
+            if (vert != null)
+            {
+                vert.SetName(newName);
+                Sort();
+            }
         }
         public void EditEdge(string firstVertexName, string secondVertexName, int weight)
         {
@@ -242,6 +273,7 @@ namespace GraphWinForms
             FindEdge(firstVertexName, secondVertexName, out FirstEdge, out SecondEdge);
             if (FirstEdge != null) FirstEdge.SetWeight(weight);
             if (SecondEdge != null) SecondEdge.SetWeight(weight);
+            Sort();
         }
         /// <summary>
         /// Удаление ребра графа
@@ -254,10 +286,12 @@ namespace GraphWinForms
             var SecondVertex = FindVertex(secondVertexName);
             GraphEdge FirstEdge, SecondEdge;
             FindEdge(firstVertexName, secondVertexName, out FirstEdge, out SecondEdge);
-            if (SecondVertex != null && FirstVertex != null && FirstEdge != null && SecondEdge != null)
+            
+            if (FirstVertex != null && SecondVertex != null)
             {
-                FirstVertex.RemoveEdge(FirstEdge);
-                SecondVertex.RemoveEdge(SecondEdge);
+                if (FirstEdge != null) FirstVertex.RemoveEdge(FirstEdge);
+                if (SecondEdge != null) SecondVertex.RemoveEdge(SecondEdge);
+                Sort();
             }
         }
         /// <summary>
@@ -272,6 +306,7 @@ namespace GraphWinForms
                 RemoveEdge(vertex.Name, vertex.Edges[0].ConnectedVertex.Name);
             }
             Vertices.Remove(vertex);
+            Sort();
         }
         /// <summary>
         /// Удаление всего графа
@@ -293,6 +328,36 @@ namespace GraphWinForms
         {
             var deikstra = new Deikstra(this);
             return deikstra.FindShortestPath(firstVertexName, secondVertexName);
+        }
+        /// <summary>
+        /// Allows to get list of vertices connected to stated vertex
+        /// </summary>
+        /// <param name="vertexName">Vertex name</param>
+        /// <returns>List of connected vertices</returns>
+        public List<GraphVertex> GetConnectedVertices(string vertexName)
+        {
+            var List = new List<GraphVertex>();
+            var vertex = FindVertex(vertexName);
+            if (vertex != null)
+            {
+                foreach (var edge in vertex.Edges)
+                {
+                    List.Add(edge.ConnectedVertex);
+                }
+            }
+            return List;
+        }
+        public List<GraphPath> DepthFirstSearch(string vertexName, int pathLength = 0)
+        {
+            var PathList = new List<GraphPath>();
+            
+            var vertex = FindVertex(vertexName);
+            if (vertex != null && pathLength > 1)
+            {
+                
+            }
+
+            return PathList;
         }
     }
 }

@@ -207,4 +207,57 @@ namespace GraphWinForms
             return Path;
         }
     }
+    /// <summary>
+    /// Graph path
+    /// </summary>
+    public class GraphPath
+    {
+        /// <summary>
+        /// List of path vertices
+        /// </summary>
+        public List<GraphVertex> Path { get; private set; }
+        /// <summary>
+        /// Path length
+        /// </summary>
+        public int Length => Path.Count;
+        /// <summary>
+        /// Path weight
+        /// </summary>
+        public int PathWeight { get; private set; }
+        /// <summary>
+        /// Graph path constructor
+        /// </summary>
+        /// <param name="path">Path</param>
+        /// <param name="pathWeight">Path weight</param>
+        public GraphPath(List<GraphVertex> path, int pathWeight = 0)
+        {
+            if (path == null) throw new NullReferenceException();
+            Path = path;
+            PathWeight = pathWeight;
+        }
+        /// <summary>
+        /// Add vertex to path
+        /// </summary>
+        /// <param name="vertex">Vertex</param>
+        public void AddVertex(GraphVertex vertex)
+        {
+            if (vertex != null && !Path.Contains(vertex))
+            {
+                Path.Add(vertex);
+            }
+        }
+    }
+    public class Path
+    {
+        private Graph Graph { get; set; }
+        public Path(Graph graph)
+        {
+            if (graph == null) throw new NullReferenceException();
+            Graph = graph;
+        }
+        public List<GraphPath> FindAllVertexPaths(string vertexName, int pathLength)
+        {
+            return new List<GraphPath>();
+        }
+    }
 }
