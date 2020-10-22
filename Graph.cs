@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms.VisualStyles;
 
 namespace GraphWinForms
 {
@@ -22,13 +23,11 @@ namespace GraphWinForms
         /// <summary>
         /// Связанная вершина
         /// </summary>
-        public GraphVertex ConnectedVertex { get; }
-
+        public GraphVertex ConnectedVertex { get; private set; }
         /// <summary>
         /// Вес ребра
         /// </summary>
-        public int EdgeWeight { get; }
-
+        public int EdgeWeight { get; private set; }
         /// <summary>
         /// Конструктор
         /// </summary>
@@ -39,6 +38,22 @@ namespace GraphWinForms
             ConnectedVertex = connectedVertex;
             EdgeWeight = weight;
         }
+        /// <summary>
+        /// Изменить смежную вершину
+        /// </summary>
+        /// <param name="vertex">Смежная вершина</param>
+        public void SetVertex(GraphVertex vertex)
+        {
+            if (vertex != null) ConnectedVertex = vertex;
+        }
+        /// <summary>
+        /// Изменить вес ребра
+        /// </summary>
+        /// <param name="weight">Вес ребра</param>
+        public void SetWeight(int weight)
+        {
+            if (weight > 0) EdgeWeight = weight;
+        }
     }
     /// <summary>
     /// Вершина графа
@@ -48,13 +63,11 @@ namespace GraphWinForms
         /// <summary>
         /// Название вершины
         /// </summary>
-        public string Name { get; }
-
+        public string Name { get; private set; }
         /// <summary>
         /// Список ребер
         /// </summary>
         public List<GraphEdge> Edges { get; }
-
         /// <summary>
         /// Конструктор
         /// </summary>
@@ -64,7 +77,6 @@ namespace GraphWinForms
             Name = vertexName;
             Edges = new List<GraphEdge>();
         }
-
         /// <summary>
         /// Добавить ребро
         /// </summary>
@@ -73,7 +85,6 @@ namespace GraphWinForms
         {
             Edges.Add(newEdge);
         }
-
         /// <summary>
         /// Добавить ребро
         /// </summary>
@@ -91,7 +102,14 @@ namespace GraphWinForms
         {
             Edges.Remove(edge);
         }
-
+        /// <summary>
+        /// Изменение имени вершины
+        /// </summary>
+        /// <param name="name">Имя вершины</param>
+        public void SetName(string name)
+        {
+            if (name != null && name != string.Empty) Name = name;
+        }
         /// <summary>
         /// Преобразование в строку
         /// </summary>
@@ -107,7 +125,6 @@ namespace GraphWinForms
         /// Список вершин графа
         /// </summary>
         public List<GraphVertex> Vertices { get; }
-
         /// <summary>
         /// Конструктор
         /// </summary>
@@ -115,7 +132,6 @@ namespace GraphWinForms
         {
             Vertices = new List<GraphVertex>();
         }
-
         /// <summary>
         /// Добавление вершины
         /// </summary>
@@ -124,7 +140,6 @@ namespace GraphWinForms
         {
             Vertices.Add(new GraphVertex(vertexName));
         }
-
         /// <summary>
         /// Поиск вершины
         /// </summary>
@@ -145,39 +160,47 @@ namespace GraphWinForms
         /// <summary>
         /// Поиск рёбер между двумя вершинами
         /// </summary>
-        /// <param name="firstName">Имя первой вершины</param>
-        /// <param name="secondName">Имя второй вершины</param>
+        /// <param name="firstVertexName">Имя первой вершины</param>
+        /// <param name="secondVertexName">Имя второй вершины</param>
         /// <param name="firstEdge">Ребро первой вершины</param>
         /// <param name="secondEdge">Ребро второй вершины</param>
-        private void FindEdge(string firstName, string secondName, out GraphEdge firstEdge, out GraphEdge secondEdge)
+        private void FindEdge(string firstVertexName, string secondVertexName, out GraphEdge firstEdge, out GraphEdge secondEdge)
         {
-            foreach (var firstItem in FindVertex(firstName).Edges)
+            firstEdge = null;
+            secondEdge = null;
+
+            var firstVertex = FindVertex(firstVertexName);
+            var secondVertex = FindVertex(secondVertexName);
+            
+            if (firstVertex != null && secondVertex != null)
             {
-                foreach (var secondItem in FindVertex(secondName).Edges)
+                foreach (var edge in firstVertex.Edges)
                 {
-                    if (firstItem.ConnectedVertex.Name == secondName && secondItem.ConnectedVertex.Name == firstName)
-                    {
-                        firstEdge = firstItem;
-                        secondEdge = secondItem;
-                        return;
-                    }
+                    if (edge.ConnectedVertex.Name == secondVertexName) firstEdge = edge;
+                }
+                foreach (var edge in secondVertex.Edges)
+                {
+                    if (edge.ConnectedVertex.Name == firstVertexName) secondEdge = edge;
                 }
             }
 
-            firstEdge = null;
-            secondEdge = null;
+            if (firstEdge == null && secondEdge != null)
+            {
+                var tempEdge = firstEdge;
+                firstEdge = secondEdge;
+                secondEdge = tempEdge;
+            }
         }
-
         /// <summary>
         /// Добавление ребра
         /// </summary>
-        /// <param name="firstName">Имя первой вершины</param>
-        /// <param name="secondName">Имя второй вершины</param>
+        /// <param name="firstVertexName">Имя первой вершины</param>
+        /// <param name="secondVertexName">Имя второй вершины</param>
         /// <param name="weight">Вес ребра соединяющего вершины</param>
-        public void AddEdge(string firstName, string secondName, int weight, EdgeOrientation orientation = EdgeOrientation.Binary)
+        public void AddEdge(string firstVertexName, string secondVertexName, int weight, EdgeOrientation orientation = EdgeOrientation.Binary)
         {
-            var FirstVertex = FindVertex(firstName);
-            var SecondVertex = FindVertex(secondName);
+            var FirstVertex = FindVertex(firstVertexName);
+            var SecondVertex = FindVertex(secondVertexName);
             if (SecondVertex != null && FirstVertex != null)
             {
                 switch (orientation)
@@ -197,16 +220,40 @@ namespace GraphWinForms
             }
         }
         /// <summary>
+        /// Изменение имени вершины
+        /// </summary>
+        /// <param name="currentName">Текущее имя вершины</param>
+        /// <param name="newName">Новое имя вершины</param>
+        public void EditVertex(string currentName, string newName)
+        {
+            FindVertex(currentName).SetName(newName);
+            foreach (var vertex in Vertices)
+            {
+                foreach (var edge in vertex.Edges)
+                {
+                    if (edge.ConnectedVertex.Name == currentName) 
+                        edge.SetVertex(FindVertex(newName));
+                }
+            }
+        }
+        public void EditEdge(string firstVertexName, string secondVertexName, int weight)
+        {
+            GraphEdge FirstEdge, SecondEdge;
+            FindEdge(firstVertexName, secondVertexName, out FirstEdge, out SecondEdge);
+            if (FirstEdge != null) FirstEdge.SetWeight(weight);
+            if (SecondEdge != null) SecondEdge.SetWeight(weight);
+        }
+        /// <summary>
         /// Удаление ребра графа
         /// </summary>
-        /// <param name="firstName">Имя первой вершины</param>
-        /// <param name="secondName">Имя второй вершины</param>
-        public void RemoveEdge(string firstName, string secondName)
+        /// <param name="firstVertexName">Имя первой вершины</param>
+        /// <param name="secondVertexName">Имя второй вершины</param>
+        public void RemoveEdge(string firstVertexName, string secondVertexName)
         {
-            var FirstVertex = FindVertex(firstName);
-            var SecondVertex = FindVertex(secondName);
+            var FirstVertex = FindVertex(firstVertexName);
+            var SecondVertex = FindVertex(secondVertexName);
             GraphEdge FirstEdge, SecondEdge;
-            FindEdge(firstName, secondName, out FirstEdge, out SecondEdge);
+            FindEdge(firstVertexName, secondVertexName, out FirstEdge, out SecondEdge);
             if (SecondVertex != null && FirstVertex != null && FirstEdge != null && SecondEdge != null)
             {
                 FirstVertex.RemoveEdge(FirstEdge);

@@ -447,7 +447,7 @@ namespace GraphWinForms
         /// <param name="name">Vertex name</param>
         public void SetName(string name)
         {
-            if (name != String.Empty) this.Name = name;
+            if (name != null && name != String.Empty) this.Name = name;
         }
         /// <summary>
         /// Selects vertex
@@ -490,6 +490,10 @@ namespace GraphWinForms
             }
             return false;
         }
+        /// <summary>
+        /// Converts vertex to string
+        /// </summary>
+        /// <returns>Vertex name</returns>
         public override string ToString() => Name;
     }
     /// <summary>
@@ -531,7 +535,7 @@ namespace GraphWinForms
         /// <param name="weight">Edge weight</param>
         public void SetWeight(int weight)
         {
-            if (weight >= 0) this.Weight = weight;
+            if (weight > 0) this.Weight = weight;
         }
         /// <summary>
         /// Allows to change edge vertices
@@ -561,8 +565,7 @@ namespace GraphWinForms
         /// <returns>Returns <c>true</c> if current edge contains stated vertex and <c>false</c> otherwise</returns>
         public bool ContainsVertex(Vertex vertex)
         {
-            return JsonConvert.SerializeObject(FirstVertex) == JsonConvert.SerializeObject(vertex) ||
-                   JsonConvert.SerializeObject(SecondVertex) == JsonConvert.SerializeObject(vertex);
+            return FirstVertex.Equals(vertex) || SecondVertex.Equals(vertex);
         }
         /// <summary>
         /// Updates vertex information in current edge
@@ -1026,9 +1029,6 @@ namespace GraphWinForms
                 }
             }
         }
-        ////////////////////////////////////////////////
-        // Have to add Editing methods to Graph class //
-        ////////////////////////////////////////////////
         /// <summary>
         /// Edits vertex data
         /// </summary>
@@ -1046,6 +1046,7 @@ namespace GraphWinForms
                 if (!IsVertexExist(newX, newY, DefaultSettings.VertexRadiusExpansion)) vertex.SetCoordinates(newX, newY);
                 if (!IsVertexExist(newName))
                 {
+                    LocalGraph.EditVertex(vertex.Name, newName);
                     foreach (var edge in Graph.Edges)
                     {
                         if (edge.ContainsVertex(vertex))
@@ -1073,6 +1074,7 @@ namespace GraphWinForms
                 if (!IsVertexExist(newX, newY, DefaultSettings.VertexRadiusExpansion)) vertex.SetCoordinates(newX, newY);
                 if (!IsVertexExist(newName))
                 {
+                    LocalGraph.EditVertex(vertex.Name, newName);
                     foreach (var edge in Graph.Edges)
                     {
                         if (edge.ContainsVertex(vertex))
@@ -1094,6 +1096,7 @@ namespace GraphWinForms
         {
             if (edge != null)
             {
+                LocalGraph.EditEdge(edge.FirstVertex.Name, edge.SecondVertex.Name, weight);
                 edge.SetWeight(weight);
             }
         }

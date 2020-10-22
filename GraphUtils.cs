@@ -15,22 +15,18 @@ namespace GraphWinForms
         /// Вершина
         /// </summary>
         public GraphVertex Vertex { get; set; }
-
         /// <summary>
         /// Не посещенная вершина
         /// </summary>
         public bool IsUnvisited { get; set; }
-
         /// <summary>
         /// Сумма весов ребер
         /// </summary>
         public int EdgesWeightSum { get; set; }
-
         /// <summary>
         /// Предыдущая вершина
         /// </summary>
         public GraphVertex PreviousVertex { get; set; }
-
         /// <summary>
         /// Конструктор
         /// </summary>
@@ -68,7 +64,7 @@ namespace GraphWinForms
         }
         public override string ToString()
         {
-            var Result = "Shortest Path:\n\n";
+            var Result = $"Shortest path from '{ShortestPath.First()}' to '{ShortestPath.Last()}':\n\n";
             foreach (var vertexName in ShortestPath)
             {
                 Result += $"{vertexName}\n";
@@ -84,9 +80,7 @@ namespace GraphWinForms
     public class Deikstra
     {
         Graph graph;
-
         List<GraphVertexInfo> infos;
-
         /// <summary>
         /// Конструктор
         /// </summary>
@@ -96,7 +90,6 @@ namespace GraphWinForms
             if (graph == null) throw new NullReferenceException();
             this.graph = graph;
         }
-
         /// <summary>
         /// Инициализация информации
         /// </summary>
@@ -108,7 +101,6 @@ namespace GraphWinForms
                 infos.Add(new GraphVertexInfo(vertex));
             }
         }
-
         /// <summary>
         /// Получение информации о вершине графа
         /// </summary>
@@ -126,7 +118,6 @@ namespace GraphWinForms
 
             return null;
         }
-
         /// <summary>
         /// Поиск непосещенной вершины с минимальным значением суммы
         /// </summary>
@@ -146,7 +137,6 @@ namespace GraphWinForms
 
             return minVertexInfo;
         }
-
         /// <summary>
         /// Поиск кратчайшего пути по названиям вершин
         /// </summary>
@@ -157,7 +147,6 @@ namespace GraphWinForms
         {
             return FindShortestPath(graph.FindVertex(startName), graph.FindVertex(finishName));
         }
-
         /// <summary>
         /// Поиск кратчайшего пути по вершинам
         /// </summary>
@@ -182,7 +171,6 @@ namespace GraphWinForms
 
             return new DeikstraResult(GetPath(startVertex, finishVertex), GetVertexInfo(finishVertex).EdgesWeightSum);
         }
-
         /// <summary>
         /// Вычисление суммы весов ребер для следующей вершины
         /// </summary>
@@ -201,7 +189,6 @@ namespace GraphWinForms
                 }
             }
         }
-
         /// <summary>
         /// Формирование пути
         /// </summary>

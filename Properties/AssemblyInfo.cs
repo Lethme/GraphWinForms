@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using GraphWinForms.Properties;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -32,5 +33,5 @@ using System.Runtime.InteropServices;
 // Можно задать все значения или принять номера сборки и редакции по умолчанию 
 // используя "*", как показано ниже:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.20.10.21")]
-[assembly: AssemblyFileVersion("1.20.10.21")]
+[assembly: AssemblyVersion(version: "1.20.10.22")]
+[assembly: AssemblyFileVersion(version: "1.20.10.22")]
