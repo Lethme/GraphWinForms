@@ -3,9 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace GraphWinForms
 {
+    /// <summary>
+    /// Sorting type
+    /// </summary>
+    public enum SortOrder
+    {
+        /// <summary>
+        /// Sorting by values ascending
+        /// </summary>
+        Ascending,
+        /// <summary>
+        /// Sorting by values descending
+        /// </summary>
+        Descending
+    }
     /// <summary>
     /// Информация о вершине
     /// </summary>
@@ -40,46 +55,17 @@ namespace GraphWinForms
         }
     }
     /// <summary>
-    /// Класс для хранения результатов работы алгоритма Дейкстры
-    /// </summary>
-    public class DeikstraResult
-    {
-        /// <summary>
-        /// Общий вес кратчайшего пути
-        /// </summary>
-        public int ShortestPathWeight { get; private set; }
-        /// <summary>
-        /// Список имён вершин, составляющих кратчайший путь
-        /// </summary>
-        public List<string> ShortestPath { get; private set; }
-        /// <summary>
-        /// Конструктор
-        /// </summary>
-        /// <param name="shortestPath">Кратчайший путь</param>
-        /// <param name="shortestPathWeight">Вес кратчайшего пути</param>
-        public DeikstraResult(List<string> shortestPath, int shortestPathWeight)
-        {
-            ShortestPathWeight = shortestPathWeight;
-            ShortestPath = shortestPath;
-        }
-        public override string ToString()
-        {
-            var Result = $"Shortest path from '{ShortestPath.First()}' to '{ShortestPath.Last()}':\n\n";
-            foreach (var vertexName in ShortestPath)
-            {
-                Result += $"{vertexName}\n";
-            }
-            Result += $"\nPath Weight: {ShortestPathWeight}";
-            
-            return Result;
-        }
-    }
-    /// <summary>
     /// Алгоритм Дейкстры
     /// </summary>
     public class Deikstra
     {
+        /// <summary>
+        /// Graph
+        /// </summary>
         Graph graph;
+        /// <summary>
+        /// Vertices info
+        /// </summary>
         List<GraphVertexInfo> infos;
         /// <summary>
         /// Конструктор
@@ -143,7 +129,7 @@ namespace GraphWinForms
         /// <param name="startName">Название стартовой вершины</param>
         /// <param name="finishName">Название финишной вершины</param>
         /// <returns>Кратчайший путь</returns>
-        public DeikstraResult FindShortestPath(string startName, string finishName)
+        public GraphPath FindShortestPath(string startName, string finishName)
         {
             return FindShortestPath(graph.FindVertex(startName), graph.FindVertex(finishName));
         }
@@ -153,7 +139,7 @@ namespace GraphWinForms
         /// <param name="startVertex">Стартовая вершина</param>
         /// <param name="finishVertex">Финишная вершина</param>
         /// <returns>Кратчайший путь</returns>
-        public DeikstraResult FindShortestPath(GraphVertex startVertex, GraphVertex finishVertex)
+        public GraphPath FindShortestPath(GraphVertex startVertex, GraphVertex finishVertex)
         {
             InitInfo();
             var first = GetVertexInfo(startVertex);
@@ -169,7 +155,7 @@ namespace GraphWinForms
                 SetSumToNextVertex(current);
             }
 
-            return new DeikstraResult(GetPath(startVertex, finishVertex), GetVertexInfo(finishVertex).EdgesWeightSum);
+            return new GraphPath(GetPath(startVertex, finishVertex), GetVertexInfo(finishVertex).EdgesWeightSum);
         }
         /// <summary>
         /// Вычисление суммы весов ребер для следующей вершины
@@ -195,12 +181,12 @@ namespace GraphWinForms
         /// <param name="startVertex">Начальная вершина</param>
         /// <param name="endVertex">Конечная вершина</param>
         /// <returns>Путь</returns>
-        List<string> GetPath(GraphVertex startVertex, GraphVertex endVertex)
+        List<GraphVertex> GetPath(GraphVertex startVertex, GraphVertex endVertex)
         {
-            var Path = new List<string>();
+            var Path = new List<GraphVertex>();
             while (endVertex != null)
             {
-                Path.Insert(0, endVertex.ToString());
+                Path.Insert(0, endVertex);
                 endVertex = GetVertexInfo(endVertex).PreviousVertex;
             }
 
@@ -216,6 +202,16 @@ namespace GraphWinForms
         /// List of path vertices
         /// </summary>
         public List<GraphVertex> Path { get; private set; }
+        /// <summary>
+        /// Converts vertex path to string path
+        /// </summary>
+        public List<string> StringPath
+        { 
+            get
+            {
+                return Path.Select(vertex => vertex.Name).ToList();
+            }
+        }
         /// <summary>
         /// Path length
         /// </summary>
@@ -246,17 +242,148 @@ namespace GraphWinForms
                 Path.Add(vertex);
             }
         }
+        /// <summary>
+        /// Set current path weight
+        /// </summary>
+        /// <param name="pathWeight">Path weight</param>
+        public void SetPathWeight(int pathWeight)
+        {
+            if (pathWeight > 0) PathWeight = pathWeight;
+        }
+        /// <summary>
+        /// Converts path to string
+        /// </summary>
+        /// <returns>String representation of path</returns>
+        public override string ToString()
+        {
+            var tempStr = String.Empty;
+            foreach (var vertex in Path)
+            {
+                if (vertex == Path.Last())
+                    tempStr += $"{vertex.Name}";
+                else
+                    tempStr += $"{vertex.Name} → ";
+            }
+            tempStr += $" {{ {PathWeight} }}";
+
+            return tempStr;
+        }
     }
     public class Path
     {
+        /// <summary>
+        /// Graph
+        /// </summary>
         private Graph Graph { get; set; }
+        /// <summary>
+        /// Path constructor
+        /// </summary>
+        /// <param name="graph">Graph</param>
         public Path(Graph graph)
         {
             if (graph == null) throw new NullReferenceException();
             Graph = graph;
         }
-        public List<GraphPath> FindAllVertexPaths(string vertexName, int pathLength)
+        /// <summary>
+        /// Sort path list by path weights
+        /// </summary>
+        /// <param name="PathList">Path list</param>
+        /// <param name="Order">Sort order</param>
+        public static void SortPathList(List<GraphPath> PathList, SortOrder Order = SortOrder.Ascending)
         {
+            switch (Order)
+            {
+                case SortOrder.Ascending:
+                    {
+                        PathList.Sort((x, y) => x.PathWeight - y.PathWeight);
+                        break;
+                    }
+                case SortOrder.Descending:
+                    {
+                        PathList.Sort((x, y) => y.PathWeight - x.PathWeight);
+                        break;
+                    }
+            }
+        }
+        /// <summary>
+        /// Find min 
+        /// </summary>
+        /// <param name="vertexName"></param>
+        /// <param name="pathLength"></param>
+        /// <returns></returns>
+        public List<GraphPath> FindMinPath(int pathLength)
+        {
+            var MinPathsList = new List<GraphPath>();
+            foreach (var vertex in Graph.Vertices)
+            {
+                var PathList = Graph.FindAllVertexPaths(vertex.Name, pathLength);
+                SortPathList(PathList, SortOrder.Ascending);
+                if (PathList.Count > 0) MinPathsList.Add(PathList[0]);
+            }
+
+            if (MinPathsList.Count > 0)
+            {
+                SortPathList(MinPathsList, SortOrder.Ascending);
+                MinPathsList.RemoveAll(path => path.PathWeight != MinPathsList[0].PathWeight);
+                return MinPathsList;
+            }
+
+            return null;
+        }
+        /// <summary>
+        /// Find all possible paths with stated length from stated vertex
+        /// </summary>
+        /// <param name="firstVertex">Start vertex</param>
+        /// <param name="visitedVertices">Just create new empty list</param>
+        /// <param name="paths">Create new empty list before calling method</param>
+        /// <param name="pathWeight">Path weight</param>
+        private void DepthFirstSearch(GraphVertex firstVertex, List<GraphVertex> visitedVertices, List<GraphPath> paths, int pathWeight)
+        {
+            if (firstVertex == null) return;
+
+            var tempList = visitedVertices.GetRange(0, visitedVertices.Count);
+            tempList.Add(firstVertex);
+
+            if (pathWeight == 1)
+            {
+                tempList.Add(firstVertex);
+                paths.Add(new GraphPath(tempList));
+                tempList.Remove(firstVertex);
+            }
+
+            foreach (var vertex in firstVertex.ConnectedVertices)
+            {
+                if (!tempList.Contains(vertex))
+                {
+                    DepthFirstSearch(vertex, tempList, paths, pathWeight - 1);
+                }
+            }
+        }
+        /// <summary>
+        /// Find all possible paths with stated length from stated vertex
+        /// </summary>
+        /// <param name="vertexName">Start vertex</param>
+        /// <param name="pathLength">Path length</param>
+        /// <returns></returns>
+        public List<GraphPath> DepthFirstSearch(string vertexName, int pathLength = 0)
+        {
+            var vertex = Graph.FindVertex(vertexName);
+            if (vertex != null && pathLength > 1)
+            {
+                var PathList = new List<GraphPath>();
+                DepthFirstSearch(vertex, new List<GraphVertex>(), PathList, pathLength);
+
+                foreach (var path in PathList)
+                {
+                    for (var i = 0; i < path.Length - 1; i++)
+                    {
+                        path.SetPathWeight(path.PathWeight + Graph.GetEdgeWeight(path.Path[i].Name, path.Path[i + 1].Name));
+                    }
+                }
+                
+                return PathList;
+            }
+
             return new List<GraphPath>();
         }
     }

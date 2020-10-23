@@ -3,13 +3,10 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json;
-using Extension;
 
 namespace GraphWinForms
 {
@@ -45,6 +42,7 @@ namespace GraphWinForms
         public static void SetFormHandler(Form1 formHandler)
         { 
             FormHandler = formHandler;
+            DisplayList.SetDisplayHandler(formHandler.listBox1);
             SelectTool();
         }
         /// <summary>
@@ -142,14 +140,15 @@ namespace GraphWinForms
         /// <param name="e"></param>
         public static void BasicDrawHandler(object sender, MouseEventArgs e)
         {
+            DrawGraph.UnHighlightPath();
+            DisplayList.LoseFocus();
+
             if (e.Button == MouseButtons.Left)
             {
                 switch (DrawTool.CurrentTool)
                 {
                     case DrawTools.Cursor:
                         {
-                            var vertex = DrawGraph.GetVertexByCoordinates(e.X, e.Y);
-                            MessageBox.Show(vertex == null ? "No vertex clicked" : vertex.Name);
                             break;
                         }
                     case DrawTools.Vertex:
@@ -158,7 +157,7 @@ namespace GraphWinForms
                             {
                                 var Line = Utils.ShowInputDialog
                                 (
-                                    "Input vertex name",
+                                    "Create vertex",
                                     "Vertex name",
                                     InputDialog.DialogType.Text
                                 );
@@ -185,8 +184,8 @@ namespace GraphWinForms
                                 {
                                     var Line = Utils.ShowInputDialog
                                     (
-                                        "Change vertex name",
-                                        "Vertex name",
+                                        "Create edge",
+                                        "Edge weight",
                                         InputDialog.DialogType.Text
                                     );
                                     if (Line != String.Empty)
@@ -228,7 +227,7 @@ namespace GraphWinForms
                             var vertex = DrawGraph.GetVertexByCoordinates(e.X, e.Y);
                             if (vertex != null)
                             {
-                                if (Utils.Confirmation($"Are you really want to delete '{vertex.Name}' vertex?", "Delete Vertex"))
+                                if (Utils.Confirmation($"Are you really want to delete '{vertex.Name}' vertex?", "Delete vertex"))
                                 {
                                     DrawGraph.RemoveVertex(vertex);
                                     DrawGraph.RedrawSheet();
@@ -247,15 +246,11 @@ namespace GraphWinForms
                             {
                                 var firstVertexName = DrawGraph.Graph.SelectedVertices[0].Name;
                                 var secondVertexName = DrawGraph.Graph.SelectedVertices[1].Name;
-                                var result = DrawGraph.LocalGraph.FindShortestPath(firstVertexName, secondVertexName);
+                                var path = DrawGraph.LocalGraph.FindShortestPath(firstVertexName, secondVertexName);
 
-                                DrawGraph.HighlightPath(result.ShortestPath, Color.DeepSkyBlue, Color.Tomato);
-                                MessageBox.Show
-                                (
-                                    result.ToString(),
-                                    "Shortest path with Deikstra Algorithm"
-                                );
-                                DrawGraph.UnHighlightPath();
+                                DisplayList.Clear();
+                                DisplayList.AddItem(path);
+
                                 DrawGraph.RemoveSelection();
                             }
                             break;
@@ -268,17 +263,6 @@ namespace GraphWinForms
                 {
                     case DrawTools.Cursor:
                         {
-                            var vertex = DrawGraph.GetVertexByCoordinates(e.X, e.Y);
-                            if (vertex != null) vertex.Select();
-                            DrawGraph.RedrawSheet();
-
-                            var Message = String.Empty;
-                            foreach (var connectedVertex in DrawGraph.LocalGraph.GetConnectedVertices(vertex.Name))
-                            {
-                                Message += $"{connectedVertex.Name}\n";
-                            }
-                            MessageBox.Show(Message);
-                            DrawGraph.RemoveSelection();
                             break;
                         }
                     case DrawTools.Vertex:
@@ -331,7 +315,7 @@ namespace GraphWinForms
                                 {
                                     if (Utils.Confirmation($"Are you really want to delete edge between " +
                                         $"'{DrawGraph.Graph.SelectedVertices[0].Name}' and '{DrawGraph.Graph.SelectedVertices[1].Name}' vertices?",
-                                        "Delete Vertex"))
+                                        "Delete edge"))
                                     {
                                         DrawGraph.RemoveEdge(DrawGraph.Graph.SelectedVertices[0], DrawGraph.Graph.SelectedVertices[1]);
                                     }
@@ -347,59 +331,6 @@ namespace GraphWinForms
                         }
                 }
             }
-        }
-    }
-    /// <summary>
-    /// Default variables class
-    /// </summary>
-    static public class DefaultSettings
-    {
-        /// <summary>
-        /// Default vertex radius
-        /// </summary>
-        public const int VertexRadius = 20;
-        /// <summary>
-        /// Default vertex radius expansion
-        /// </summary>
-        public const int VertexRadiusExpansion = 100;
-        /// <summary>
-        /// Default label width modifier
-        /// </summary>
-        public const int LabelWidthModifier = 5;
-        /// <summary>
-        /// Default label height modifier
-        /// </summary>
-        public const int LabelHeightModifier = 2;
-        /// <summary>
-        /// Default color
-        /// </summary>
-        public static Color Color { get; private set; } = Color.Black;
-        /// <summary>
-        /// Default selection color
-        /// </summary>
-        public static Color SelectionColor { get; private set; } = Color.Red;
-        /// <summary>
-        /// Default font for vertex labels
-        /// </summary>
-        public static Font VertexFont { get; private set; } = new Font("Consolas", 9);
-        /// <summary>
-        /// Default font for edge labels
-        /// </summary>
-        public static Font EdgeFont { get; private set; } = new Font("Consolas", 12);
-        /// <summary>
-        /// Default string format for labels
-        /// </summary>
-        public static StringFormat StringFormat { get; private set; } = new StringFormat();
-        /// <summary>
-        /// Default variables initializator
-        /// </summary>
-        /// <remarks>
-        /// You can use it for initializing data need to be stated after compiling process
-        /// </remarks>
-        public static void Initialize()
-        {
-            StringFormat.Alignment = StringAlignment.Center;
-            StringFormat.LineAlignment = StringAlignment.Center;
         }
     }
     /// <summary>
@@ -422,11 +353,11 @@ namespace GraphWinForms
         /// <summary>
         /// Vertex radius
         /// </summary>
-        public int Radius { get; private set; }
+        [JsonIgnore] public int Radius { get; private set; } = DefaultSettings.VertexRadius;
         /// <summary>
         /// Vertex border color
         /// </summary>
-        public Color BorderColor { get; private set; } = DefaultSettings.Color;
+        [JsonIgnore] public Color BorderColor { get; private set; } = DefaultSettings.Color;
         /// <summary>
         /// Vertex constructor
         /// </summary>
@@ -434,12 +365,11 @@ namespace GraphWinForms
         /// <param name="y">Y coordinate</param>
         /// <param name="name">Vertex name</param>
         /// <param name="radius">Vertex radius</param>
-        public Vertex(int x, int y, string name, int radius = DefaultSettings.VertexRadius)
+        public Vertex(int x, int y, string name)
         {
             this.X = x;
             this.Y = y;
             this.Name = name;
-            this.Radius = radius;
         }
         /// <summary>
         /// Allows to change vertex border color
@@ -542,7 +472,7 @@ namespace GraphWinForms
         /// <summary>
         /// Edge color
         /// </summary>
-        public Color Color { get; private set; } = DefaultSettings.Color;
+        [JsonIgnore] public Color Color { get; private set; } = DefaultSettings.Color;
         /// <summary>
         /// Edge constructor
         /// </summary>
@@ -614,17 +544,41 @@ namespace GraphWinForms
         /// </summary>
         public int CurrentNumber { get; set; } = 1;
         /// <summary>
+        /// Check if graph is empty
+        /// </summary>
+        [JsonIgnore] public bool IsEmpty => Vertices.Count == 0;
+        /// <summary>
         /// Vertices list
         /// </summary>
         public List<Vertex> Vertices { get; private set; } = new List<Vertex>();
         /// <summary>
         /// Selected vertices list
         /// </summary>
-        public List<Vertex> SelectedVertices { get; private set; } = new List<Vertex>();
+        [JsonIgnore] public List<Vertex> SelectedVertices { get; private set; } = new List<Vertex>();
         /// <summary>
         /// Edges list
         /// </summary>
         public List<Edge> Edges { get; private set; } = new List<Edge>();
+        /// <summary>
+        /// Sort vertices list
+        /// </summary>
+        /// <param name="Order">Sort order</param>
+        public void Sort(SortOrder Order = SortOrder.Ascending)
+        {
+            switch (Order)
+            {
+                case SortOrder.Ascending:
+                    {
+                        Vertices.Sort((x, y) => x.Name.CompareTo(y.Name));
+                        break;
+                    }
+                case SortOrder.Descending:
+                    {
+                        Vertices.Sort((x, y) => y.Name.CompareTo(x.Name));
+                        break;
+                    }
+            }
+        }
     }
     /// <summary>
     /// Graph drawing class
@@ -692,6 +646,8 @@ namespace GraphWinForms
             {
                 ClearGraph();
                 Graph = graph;
+                Graph.Sort(SortOrder.Ascending);
+                DisplayList.Clear();
                 InitializeLocalGraph();
             }
         }
@@ -735,6 +691,15 @@ namespace GraphWinForms
             Graph.CurrentNumber = 1;
             LocalGraph.Clear();
             ClearSheet();
+        }
+        /// <summary>
+        /// Converts graphic vertex to local
+        /// </summary>
+        /// <param name="vertex">Graphic vertex</param>
+        /// <returns>Local vertex</returns>
+        public static GraphVertex ConvertVertexToGraphVertex(Vertex vertex)
+        {
+            return LocalGraph.FindVertex(vertex.Name);
         }
         /// <summary>
         /// Graph savig type constants
@@ -825,6 +790,9 @@ namespace GraphWinForms
             {
                 using (var GraphFile = new StreamWriter(FileName))
                 {
+                    UnHighlightPath();
+                    DisplayList.LoseFocus();
+
                     var JsonString = JsonConvert.SerializeObject(Graph);
                     GraphFile.Write(JsonString);
                     GraphFile.Close();
@@ -1034,6 +1002,7 @@ namespace GraphWinForms
                     Graph.Vertices.Add(new Vertex(xPos, yPos, Name));
                     LocalGraph.AddVertex(Name);
                     Graph.CurrentNumber++;
+                    Graph.Sort(SortOrder.Ascending);
                 }
             }
         }
@@ -1082,6 +1051,7 @@ namespace GraphWinForms
                         }
                     }
                     vertex.SetName(newName);
+                    Graph.Sort(SortOrder.Ascending);
                 }
                 vertex.SetRadius(newRadius);
             }
@@ -1110,6 +1080,7 @@ namespace GraphWinForms
                         }
                     }
                     vertex.SetName(newName);
+                    Graph.Sort(SortOrder.Ascending);
                 }
                 vertex.SetRadius(newRadius);
             }
@@ -1197,6 +1168,7 @@ namespace GraphWinForms
                 RemoveEdge(edge);
             }
             Graph.Vertices.Remove(vertex);
+            Graph.Sort(SortOrder.Ascending);
             LocalGraph.RemoveVertex(vertex.Name);
         }
         /// <summary>
@@ -1220,11 +1192,12 @@ namespace GraphWinForms
         /// <summary>
         /// Sets borders color to stated list of vertices
         /// </summary>
-        /// <param name="verticesNames">List of vertices</param>
+        /// <param name="verticesNames">List of vertices names</param>
         /// <param name="pathColor">Path color</param>
         /// <param name="edgeVerticesColor">Color for vertices on the edges of the path</param>
         public static void HighlightPath(List<string> verticesNames, Color pathColor, Color edgeVerticesColor)
         {
+            UnHighlightPath();
             if (verticesNames != null && verticesNames.Count > 1)
             {
                 var vertexCount = 0;
@@ -1257,6 +1230,51 @@ namespace GraphWinForms
             }
         }
         /// <summary>
+        /// Sets borders color to stated list of vertices
+        /// </summary>
+        /// <param name="verticesNames">List of vertices names</param>
+        /// <param name="pathColor">Path color</param>
+        /// <param name="firstEdgeVertexColor">Color for vertice on the first edge of the path</param>
+        /// <param name="secondEdgeVertexColor">Color for vertice on the second edge of the path</param>
+        public static void HighlightPath(List<string> verticesNames, Color pathColor, Color firstEdgeVertexColor, Color secondEdgeVertexColor)
+        {
+            UnHighlightPath();
+            if (verticesNames != null && verticesNames.Count > 1)
+            {
+                var vertexCount = 0;
+                foreach (var vertexName in verticesNames)
+                {
+                    var vertex = GetVertexByName(vertexName);
+                    if (vertex != null)
+                    {
+                        if (vertexCount == 0)
+                        {
+                            vertex.SetBorderColor(firstEdgeVertexColor);
+                        }
+                        else if (vertexCount == verticesNames.Count - 1)
+                        {
+                            vertex.SetBorderColor(secondEdgeVertexColor);
+                        }
+                        else
+                        {
+                            vertex.SetBorderColor(pathColor);
+                        }
+                        vertexCount++;
+                    }
+                }
+                for (var i = 0; i < verticesNames.Count - 1; i++)
+                {
+                    var Edge = GetEdgeByVerticesNames(verticesNames[i], verticesNames[i + 1]);
+                    if (Edge != null)
+                    {
+                        Edge.SetColor(pathColor);
+                    }
+                }
+
+                RedrawSheet();
+            }
+        }
+        /// <summary>
         /// Sets borders color of all vertives to default color
         /// </summary>
         public static void UnHighlightPath()
@@ -1264,7 +1282,7 @@ namespace GraphWinForms
             int count = 0;
             foreach (var vertex in Graph.Vertices)
             {
-                if (vertex.BorderColor != DefaultSettings.Color)
+                if (vertex.BorderColor != DefaultSettings.Color && vertex.BorderColor != DefaultSettings.SelectionColor)
                 {
                     vertex.SetBorderColor(DefaultSettings.Color);
                     count++;
@@ -1358,112 +1376,6 @@ namespace GraphWinForms
                 rect,
                 DefaultSettings.StringFormat
             );
-        }
-    }
-    public static class Utils
-    {
-        /// <summary>
-        /// Allows to show basic Yes/No dialog
-        /// </summary>
-        /// <param name="ConfirmationText">Text shown within dialog</param>
-        /// <param name="ConfirmationTitle">Text shown in dialog title</param>
-        /// <param name="DefaultButton">Default selected dialog button</param>
-        /// <returns>Returns <c>true</c> if user clicked Yes button and <c>false</c> otherwise</returns>
-        public static bool Confirmation(string ConfirmationText, string ConfirmationTitle, MessageBoxDefaultButton DefaultButton = MessageBoxDefaultButton.Button1)
-        {
-            if (ConfirmationText == String.Empty || ConfirmationTitle == String.Empty)
-                throw new ArgumentNullException();
-
-            var ConfirmationResult = MessageBox.Show
-            (
-                ConfirmationText,
-                ConfirmationTitle,
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question,
-                DefaultButton
-            );
-
-            if (ConfirmationResult == DialogResult.Yes) return true;
-            return false;
-        }
-        /// <summary>
-        /// Shows input dialog form
-        /// </summary>
-        /// <param name="inputDialogTitle">Dialog title</param>
-        /// <param name="inputDialogText">Dialog text</param>
-        /// <param name="Type">Dialog type</param>
-        /// <returns>Line that user entered in dialog</returns>
-        public static string ShowInputDialog(string inputDialogTitle, string inputDialogText, InputDialog.DialogType Type = InputDialog.DialogType.Text)
-        {
-            using (var inputDialog = new InputDialog(inputDialogTitle, inputDialogText, Type))
-            {
-                inputDialog.ShowDialog();
-                return inputDialog.Line;
-            }
-        }
-        /// <summary>
-        /// Check if application has administrator rights
-        /// </summary>
-        /// <returns>Returns <c>true</c> if application has administrator right and <c>false</c> otherwise</returns>
-        public static bool IsAdministrator()
-        {
-            WindowsIdentity identity = WindowsIdentity.GetCurrent();
-            WindowsPrincipal principal = new WindowsPrincipal(identity);
-            return principal.IsInRole(WindowsBuiltInRole.Administrator);
-        }
-        /// <summary>
-        /// Associates application extension with files
-        /// </summary>
-        public static void AssociateExtension()
-        {
-            if (!FileAssociation.IsAssociated)
-            {
-                if (IsAdministrator())
-                    FileAssociation.Associate("Graph Builder File", Application.ExecutablePath);
-                else
-                    MessageBox.Show
-                    (
-                        "Application has to be run with administrator rights to associate it's file extension with itself.",
-                        "Information",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information,
-                        MessageBoxDefaultButton.Button1,
-                        MessageBoxOptions.DefaultDesktopOnly
-                    );
-            }
-        }
-        /// <summary>
-        /// Unassociates application extension with files
-        /// </summary>
-        public static void UnAssociateExtension()
-        {
-            if (FileAssociation.IsAssociated)
-            {
-                if (IsAdministrator())
-                    FileAssociation.Remove();
-                else
-                {
-                    MessageBox.Show
-                    (
-                        "Application has to be run with administrator rights to associate it's file extension with itself.",
-                        "Information",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information,
-                        MessageBoxDefaultButton.Button1,
-                        MessageBoxOptions.DefaultDesktopOnly
-                    );
-                }
-            }
-        }
-        /// <summary>
-        /// Represents equation checking method
-        /// </summary>
-        /// <param name="firstObject">First object</param>
-        /// <param name="secondObject">Second object</param>
-        /// <returns>Return <c>true</c> if objects are equal and <c>false</c> otherwise</returns>
-        public static bool Equals(object firstObject, object secondObject)
-        {
-            return JsonConvert.SerializeObject(firstObject) == JsonConvert.SerializeObject(secondObject);
         }
     }
 }

@@ -142,12 +142,19 @@ namespace GraphWinForms
         /// </summary>
         public List<GraphVertex> Vertices { get; }
         /// <summary>
+        /// Check if graph is empty
+        /// </summary>
+        public bool IsEmpty => Vertices.Count == 0;
+        /// <summary>
         /// Конструктор
         /// </summary>
         public Graph()
         {
             Vertices = new List<GraphVertex>();
         }
+        /// <summary>
+        /// Sort graph
+        /// </summary>
         public void Sort()
         {
             Vertices.Sort((x, y) => x.Name.CompareTo(y.Name));
@@ -217,6 +224,20 @@ namespace GraphWinForms
             }
         }
         /// <summary>
+        /// Get edge weight
+        /// </summary>
+        /// <param name="firstVertexName">First vertex name</param>
+        /// <param name="secondVertexName">Second vertex name</param>
+        /// <returns>Edge weight</returns>
+        public int GetEdgeWeight(string firstVertexName, string secondVertexName)
+        {
+            GraphEdge FirstEdge, SecondEdge;
+            FindEdge(firstVertexName, secondVertexName, out FirstEdge, out SecondEdge);
+            if (FirstEdge != null) return FirstEdge.EdgeWeight;
+            if (SecondEdge != null) return SecondEdge.EdgeWeight;
+            return 0;
+        }
+        /// <summary>
         /// Добавление ребра
         /// </summary>
         /// <param name="firstVertexName">Имя первой вершины</param>
@@ -267,6 +288,12 @@ namespace GraphWinForms
                 Sort();
             }
         }
+        /// <summary>
+        /// Edit edge between two vertices
+        /// </summary>
+        /// <param name="firstVertexName">First vertex name</param>
+        /// <param name="secondVertexName">Second vertex name</param>
+        /// <param name="weight">Edge weight</param>
         public void EditEdge(string firstVertexName, string secondVertexName, int weight)
         {
             GraphEdge FirstEdge, SecondEdge;
@@ -324,7 +351,7 @@ namespace GraphWinForms
         /// <param name="firstVertexName">Имя начальной вершины</param>
         /// <param name="secondVertexName">Имя конечной вершины</param>
         /// <returns>Объект, хранящий кратчайший путь и его вес</returns>
-        public DeikstraResult FindShortestPath(string firstVertexName, string secondVertexName)
+        public GraphPath FindShortestPath(string firstVertexName, string secondVertexName)
         {
             var deikstra = new Deikstra(this);
             return deikstra.FindShortestPath(firstVertexName, secondVertexName);
@@ -347,16 +374,25 @@ namespace GraphWinForms
             }
             return List;
         }
-        public List<GraphPath> DepthFirstSearch(string vertexName, int pathLength = 0)
+        /// <summary>
+        /// Find all possible paths with stated length from stated vertex
+        /// </summary>
+        /// <param name="vertexName">Vertex name</param>
+        /// <param name="pathLength">Path length</param>
+        /// <returns>List of paths</returns>
+        public List<GraphPath> FindAllVertexPaths(string vertexName, int pathLength = 0)
         {
-            var PathList = new List<GraphPath>();
-            
-            var vertex = FindVertex(vertexName);
-            if (vertex != null && pathLength > 1)
-            {
-                
-            }
+            var Path = new Path(this);
+            var PathList = Path.DepthFirstSearch(vertexName, pathLength);
+            PathList.RemoveAll(path => path.Length != pathLength);
 
+            return PathList;
+        }
+        public List<GraphPath> FindMinPath(int pathLength)
+        {
+            var Path = new Path(this);
+            var PathList = Path.FindMinPath(pathLength);
+            if (PathList != null && PathList.Count > 1) PathList.Sort((x, y) => x.Path[0].Name.CompareTo(y.Path[0].Name));
             return PathList;
         }
     }

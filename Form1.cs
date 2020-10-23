@@ -14,9 +14,35 @@ namespace GraphWinForms
 {
     public partial class Form1 : Form
     {
+        public enum ListAppearance
+        {
+            Shown,
+            Hidden
+        }
+        public void SetListAppearance(ListAppearance listAppearance)
+        {
+            switch (listAppearance)
+            {
+                case ListAppearance.Shown:
+                    {
+                        Width = 1210;
+                        listToolStripMenuItem.Checked = true;
+                        break;
+                    }
+                case ListAppearance.Hidden:
+                    {
+                        Width = 1003;
+                        listToolStripMenuItem.Checked = false;
+                        break;
+                    }
+            }
+        }
         public Form1(string[] args)
         {
             InitializeComponent();
+
+            SetListAppearance(ListAppearance.Shown);
+
             display.BackColor = Color.White;
             display.BorderStyle = BorderStyle.FixedSingle;
 
@@ -26,7 +52,6 @@ namespace GraphWinForms
             ToolTip.SetToolTip(edgeTool, "Edge building tool");
             ToolTip.SetToolTip(editTool, "Edit graph elements tool");
             ToolTip.SetToolTip(deleteTool, "Delete graph elements tool");
-            ToolTip.SetToolTip(clearTool, "Clear graph");
             ToolTip.SetToolTip(deikstraTool, "Find a shortest path between two selected vertices");
 
             DrawGraph.CreateGraphics(display);
@@ -42,44 +67,47 @@ namespace GraphWinForms
 
         private void cursorTool_Click(object sender, EventArgs e)
         {
+            DrawGraph.UnHighlightPath();
+            DisplayList.LoseFocus();
             DrawTool.SetTool(DrawTools.Cursor);
         }
 
         private void vertexTool_Click(object sender, EventArgs e)
         {
+            DrawGraph.UnHighlightPath();
+            DisplayList.LoseFocus();
             DrawTool.SetTool(DrawTools.Vertex);
         }
 
         private void edgeTool_Click(object sender, EventArgs e)
         {
+            DrawGraph.UnHighlightPath();
+            DisplayList.LoseFocus();
             DrawTool.SetTool(DrawTools.Edge);
         }
         private void editTool_Click(object sender, EventArgs e)
         {
+            DrawGraph.UnHighlightPath();
+            DisplayList.LoseFocus();
             DrawTool.SetTool(DrawTools.Edit);
         }
 
         private void deleteTool_Click(object sender, EventArgs e)
         {
+            DrawGraph.UnHighlightPath();
+            DisplayList.LoseFocus();
             DrawTool.SetTool(DrawTools.Delete);
         }
 
         private void deikstraTool_Click(object sender, EventArgs e)
         {
+            DrawGraph.UnHighlightPath();
+            DisplayList.LoseFocus();
             DrawTool.SetTool(DrawTools.Deikstra);
         }
 
-        private void clearTool_Click_1(object sender, EventArgs e)
-        {
-            DrawTool.LoseFocus();
-            if (Utils.Confirmation("Are you really want to delete a whole graph?", "Delete graph"))
-            {
-                DrawGraph.ClearGraph();
-            }
-        }
         private void saveImageTool_Click(object sender, EventArgs e)
         {
-            DrawTool.LoseFocus();
             DrawGraph.SaveGraphAsImage();
         }
 
@@ -122,7 +150,7 @@ namespace GraphWinForms
         }
 
         private void testToolStripMenuItem_Click(object sender, EventArgs e)
-        {
+        {            
             var VertexInfo = String.Empty;
             foreach (var vertex in DrawGraph.Graph.Vertices)
             {
@@ -158,6 +186,67 @@ namespace GraphWinForms
             {
                 MessageBox.Show(EdgeInfo, "Local Representation");
             });
+        }
+
+        private void listToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (((ToolStripMenuItem)sender).Checked) SetListAppearance(ListAppearance.Shown);
+            else SetListAppearance(ListAppearance.Hidden);
+        }
+        private void clearToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!DrawGraph.LocalGraph.IsEmpty)
+            {
+                if (Utils.Confirmation("Are you really want to delete graph?", "Delete graph"))
+                {
+                    DisplayList.Clear();
+                    DrawGraph.ClearGraph();
+                }
+            }
+        }
+
+        private void findMinimalPathToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!DrawGraph.LocalGraph.IsEmpty)
+            {
+                var Line = Utils.ShowInputDialog
+                (
+                    "Input path length",
+                    "Path length",
+                    InputDialog.DialogType.IntNumber
+                );
+                if (Line != null && Line != String.Empty)
+                {
+                    DisplayList.Clear();
+                    DrawGraph.UnHighlightPath();
+                    var MinPathList = DrawGraph.LocalGraph.FindMinPath(Int32.Parse(Line));
+                    if (MinPathList != null)
+                    {
+                        foreach (var path in MinPathList)
+                        {
+                            //MessageBox.Show(path.ToString());
+                            DisplayList.AddItem(path);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (DisplayList.SelectedIndex != -1)
+            {
+                DrawGraph.HighlightPath(DisplayList.GetItem<GraphPath>().StringPath, Color.DeepSkyBlue, Color.LawnGreen, Color.Tomato);
+            }
+        }
+
+        private void clearToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (!DisplayList.IsEmpty && Utils.Confirmation("You really want to clear the list?", "Clear list"))
+            {
+                DisplayList.Clear();
+                DrawGraph.UnHighlightPath();
+            }
         }
     }
 }
