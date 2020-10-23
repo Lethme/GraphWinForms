@@ -248,7 +248,6 @@ namespace GraphWinForms
                                 var secondVertexName = DrawGraph.Graph.SelectedVertices[1].Name;
                                 var path = DrawGraph.LocalGraph.FindShortestPath(firstVertexName, secondVertexName);
 
-                                DisplayList.Clear();
                                 DisplayList.AddItem(path);
 
                                 DrawGraph.RemoveSelection();
