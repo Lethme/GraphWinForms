@@ -388,6 +388,11 @@ namespace GraphWinForms
 
             return PathList;
         }
+        /// <summary>
+        /// Finds list of paths with minimal weight and stated length
+        /// </summary>
+        /// <param name="pathLength">Path length</param>
+        /// <returns>list of paths with minimal weight and stated length</returns>
         public List<GraphPath> FindMinPath(int pathLength)
         {
             var Path = new Path(this);

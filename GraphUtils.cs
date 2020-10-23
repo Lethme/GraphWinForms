@@ -318,7 +318,13 @@ namespace GraphWinForms
             {
                 var PathList = Graph.FindAllVertexPaths(vertex.Name, pathLength);
                 SortPathList(PathList, SortOrder.Ascending);
-                if (PathList.Count > 0) MinPathsList.Add(PathList[0]);
+                if (PathList.Count > 0)
+                {
+                    foreach (var minVertexPath in PathList.FindAll(path => path.PathWeight == PathList[0].PathWeight))
+                    {
+                        MinPathsList.Add(minVertexPath);
+                    }
+                }
             }
 
             if (MinPathsList.Count > 0)
