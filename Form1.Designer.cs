@@ -51,16 +51,14 @@
             this.findMinimalPathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.graphToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.listToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.listToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.clearToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.testToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.test1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.display = new System.Windows.Forms.PictureBox();
-            this.listToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.clearToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.panel2.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.display)).BeginInit();
@@ -159,7 +157,6 @@
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.graphToolStripMenuItem1,
-            this.graphToolStripMenuItem,
             this.listToolStripMenuItem1,
             this.aboutToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
@@ -272,21 +269,20 @@
             this.clearToolStripMenuItem.Text = "Clear";
             this.clearToolStripMenuItem.Click += new System.EventHandler(this.clearToolStripMenuItem_Click);
             // 
-            // graphToolStripMenuItem
+            // listToolStripMenuItem1
             // 
-            this.graphToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.listToolStripMenuItem});
-            this.graphToolStripMenuItem.Name = "graphToolStripMenuItem";
-            this.graphToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-            this.graphToolStripMenuItem.Text = "View";
+            this.listToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.clearToolStripMenuItem1});
+            this.listToolStripMenuItem1.Name = "listToolStripMenuItem1";
+            this.listToolStripMenuItem1.Size = new System.Drawing.Size(37, 20);
+            this.listToolStripMenuItem1.Text = "List";
             // 
-            // listToolStripMenuItem
+            // clearToolStripMenuItem1
             // 
-            this.listToolStripMenuItem.CheckOnClick = true;
-            this.listToolStripMenuItem.Name = "listToolStripMenuItem";
-            this.listToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.listToolStripMenuItem.Text = "List";
-            this.listToolStripMenuItem.Click += new System.EventHandler(this.listToolStripMenuItem_Click);
+            this.clearToolStripMenuItem1.Name = "clearToolStripMenuItem1";
+            this.clearToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.clearToolStripMenuItem1.Text = "Clear";
+            this.clearToolStripMenuItem1.Click += new System.EventHandler(this.clearToolStripMenuItem1_Click);
             // 
             // aboutToolStripMenuItem
             // 
@@ -301,21 +297,21 @@
             // aboutToolStripMenuItem1
             // 
             this.aboutToolStripMenuItem1.Name = "aboutToolStripMenuItem1";
-            this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(170, 22);
             this.aboutToolStripMenuItem1.Text = "About";
             this.aboutToolStripMenuItem1.Click += new System.EventHandler(this.aboutToolStripMenuItem1_Click);
             // 
             // testToolStripMenuItem
             // 
             this.testToolStripMenuItem.Name = "testToolStripMenuItem";
-            this.testToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.testToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
             this.testToolStripMenuItem.Text = "Show graphic part";
             this.testToolStripMenuItem.Click += new System.EventHandler(this.testToolStripMenuItem_Click);
             // 
             // test1ToolStripMenuItem
             // 
             this.test1ToolStripMenuItem.Name = "test1ToolStripMenuItem";
-            this.test1ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.test1ToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
             this.test1ToolStripMenuItem.Text = "Show local part";
             this.test1ToolStripMenuItem.Click += new System.EventHandler(this.test1ToolStripMenuItem_Click);
             // 
@@ -335,21 +331,6 @@
             this.display.Size = new System.Drawing.Size(964, 519);
             this.display.TabIndex = 0;
             this.display.TabStop = false;
-            // 
-            // listToolStripMenuItem1
-            // 
-            this.listToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.clearToolStripMenuItem1});
-            this.listToolStripMenuItem1.Name = "listToolStripMenuItem1";
-            this.listToolStripMenuItem1.Size = new System.Drawing.Size(37, 20);
-            this.listToolStripMenuItem1.Text = "List";
-            // 
-            // clearToolStripMenuItem1
-            // 
-            this.clearToolStripMenuItem1.Name = "clearToolStripMenuItem1";
-            this.clearToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
-            this.clearToolStripMenuItem1.Text = "Clear";
-            this.clearToolStripMenuItem1.Click += new System.EventHandler(this.clearToolStripMenuItem1_Click);
             // 
             // Form1
             // 
@@ -392,14 +373,12 @@
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem testToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem test1ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem graphToolStripMenuItem;
         public System.Windows.Forms.Button deikstraTool;
         public System.Windows.Forms.Button editTool;
         public System.Windows.Forms.Button deleteTool;
         public System.Windows.Forms.Button edgeTool;
         public System.Windows.Forms.Button vertexTool;
         public System.Windows.Forms.Button cursorTool;
-        private System.Windows.Forms.ToolStripMenuItem listToolStripMenuItem;
         public System.Windows.Forms.ListBox listBox1;
         private System.Windows.Forms.ToolStripMenuItem graphToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem findMinimalPathToolStripMenuItem;

@@ -14,34 +14,9 @@ namespace GraphWinForms
 {
     public partial class Form1 : Form
     {
-        public enum ListAppearance
-        {
-            Shown,
-            Hidden
-        }
-        public void SetListAppearance(ListAppearance listAppearance)
-        {
-            switch (listAppearance)
-            {
-                case ListAppearance.Shown:
-                    {
-                        Width = 1210;
-                        listToolStripMenuItem.Checked = true;
-                        break;
-                    }
-                case ListAppearance.Hidden:
-                    {
-                        Width = 1003;
-                        listToolStripMenuItem.Checked = false;
-                        break;
-                    }
-            }
-        }
         public Form1(string[] args)
         {
             InitializeComponent();
-
-            SetListAppearance(ListAppearance.Shown);
 
             display.BackColor = Color.White;
             display.BorderStyle = BorderStyle.FixedSingle;
@@ -186,12 +161,6 @@ namespace GraphWinForms
             {
                 MessageBox.Show(EdgeInfo, "Local Representation");
             });
-        }
-
-        private void listToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (((ToolStripMenuItem)sender).Checked) SetListAppearance(ListAppearance.Shown);
-            else SetListAppearance(ListAppearance.Hidden);
         }
         private void clearToolStripMenuItem_Click(object sender, EventArgs e)
         {
