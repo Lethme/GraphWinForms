@@ -234,20 +234,7 @@ namespace GraphWinForms
         /// Converts path to string
         /// </summary>
         /// <returns>String representation of path</returns>
-        public override string ToString()
-        {
-            var tempStr = String.Empty;
-            foreach (var vertex in Path)
-            {
-                if (vertex == Path.Last())
-                    tempStr += $"{vertex.Name}";
-                else
-                    tempStr += $"{vertex.Name} → ";
-            }
-            tempStr += $" {{ {PathWeight} }}";
-
-            return tempStr;
-        }
+        public override string ToString() => StringPath.Aggregate((v1, v2) => v1 + " → " + v2) + $" {{ {PathWeight} }}";
     }
     public class Path
     {

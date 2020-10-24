@@ -39,6 +39,7 @@
     <Win32Resource>
     </Win32Resource>
   </PropertyGroup>
+  <PropertyGroup />
   <PropertyGroup>
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
   </PropertyGroup>
@@ -126,8 +127,11 @@
     <None Include="Resources\Images\delete.png" />
     <None Include="Resources\Images\edit.png" />
     <None Include="Resources\Images\save.png" />
-    <Content Include="graph-icon.ico" />
     <None Include="Resources\Images\graph-icon.png" />
+    <None Include="Resources\graph-icon-512.bmp" />
+    <Content Include="graph-icon.ico" />
+    <None Include="Resources\Images\center.png" />
+    <Content Include="Resources\Images\graph-icon-512.png" />
     <Content Include="Resources\Images\trash.png" />
     <Content Include="Resources\Images\cursor.png" />
     <Content Include="Resources\Images\vertex.png" />

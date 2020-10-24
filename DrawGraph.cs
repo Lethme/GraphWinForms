@@ -31,10 +31,15 @@ namespace GraphWinForms
         /// Base application form handler setter method
         /// </summary>
         /// <param name="formHandler">Base application form handler</param>
-        public static void SetFormHandler(Form1 formHandler)
+        /// <param name="args">Console arguments</param>
+        public static void SetFormHandler(Form1 formHandler, string[] args)
         { 
             FormHandler = formHandler;
             DisplayList.SetDisplayHandler(formHandler.listBox1);
+            formHandler.Activated += delegate { LoseFocus(); };
+
+            formHandler.display.BackColor = Color.White;
+            formHandler.display.BorderStyle = BorderStyle.FixedSingle;
 
             ToolHandlers.Add(formHandler.cursorTool);
             ToolHandlers.Add(formHandler.vertexTool);
@@ -42,6 +47,90 @@ namespace GraphWinForms
             ToolHandlers.Add(formHandler.editTool);
             ToolHandlers.Add(formHandler.deleteTool);
             ToolHandlers.Add(formHandler.deikstraTool);
+            ToolHandlers.Add(formHandler.centerTool);
+
+            foreach (var tool in ToolHandlers)
+            {
+                tool.Click += (s, e) =>
+                {
+                    DrawGraph.UnHighlightPath();
+                    DisplayList.LoseFocus();
+                };
+            }
+
+            ToolHandlers[0].Click += (s, e) => { SetTool(DrawTools.Cursor); };
+            ToolHandlers[1].Click += (s, e) => { SetTool(DrawTools.Vertex); };
+            ToolHandlers[2].Click += (s, e) => { SetTool(DrawTools.Edge); };
+            ToolHandlers[3].Click += (s, e) => { SetTool(DrawTools.Edit); };
+            ToolHandlers[4].Click += (s, e) => { SetTool(DrawTools.Delete); };
+            ToolHandlers[5].Click += (s, e) => { SetTool(DrawTools.Deikstra); };
+            ToolHandlers[6].Click += (s, e) => { SetTool(DrawTools.Center); };
+
+            var ToolTip = new ToolTip();
+            ToolTip.SetToolTip(ToolHandlers[0], "Basic tool");
+            ToolTip.SetToolTip(ToolHandlers[1], "Vetex building tool");
+            ToolTip.SetToolTip(ToolHandlers[2], "Edge building tool");
+            ToolTip.SetToolTip(ToolHandlers[3], "Edit graph elements tool");
+            ToolTip.SetToolTip(ToolHandlers[4], "Delete graph elements tool");
+            ToolTip.SetToolTip(ToolHandlers[5], "Find a shortest path between two selected vertices");
+            ToolTip.SetToolTip(ToolHandlers[6], "Find all shortest paths from selected vertex to every other one");
+
+            formHandler.saveAsImageFileToolStripMenuItem.Click += (s, e) => { DrawGraph.SaveGraphAsImage(); };
+            formHandler.saveAsGWFFileToolStripMenuItem.Click += (s, e) => { DrawGraph.SaveGraphAsGWFFile(); };
+            formHandler.openToolStripMenuItem.Click += (s, e) => { DrawGraph.LoadGraphFromGWFFile(); };
+            formHandler.aboutToolStripMenuItem.Click += (s, e) => { using (var AboutForm = new About()) { AboutForm.ShowDialog(); } };
+            formHandler.exitToolStripMenuItem.Click += (s, e) => { if (Utils.Confirmation("You really want to exit?", "Exit")) { Application.Exit(); } };
+            formHandler.associateFileTypeToolStripMenuItem.Click += (s, e) => { Utils.AssociateExtension(); };
+            formHandler.unassociateFileTypeToolStripMenuItem.Click += (s, e) => { Utils.UnAssociateExtension(); };
+            formHandler.clearToolStripMenuItem.Click += (s, e) =>
+            {
+                if (!DrawGraph.LocalGraph.IsEmpty)
+                {
+                    if (Utils.Confirmation("Are you really want to delete graph?", "Delete graph"))
+                    {
+                        DisplayList.Clear();
+                        DrawGraph.ClearGraph();
+                    }
+                }
+            };
+            formHandler.findMinimalPathToolStripMenuItem.Click += (s, e) => 
+            {
+                if (!DrawGraph.LocalGraph.IsEmpty)
+                {
+                    var Line = Utils.ShowInputDialog
+                    (
+                        "Input path length",
+                        "Path length",
+                        InputDialog.DialogType.IntNumber
+                    );
+                    if (Line != null && Line != String.Empty)
+                    {
+                        DisplayList.Clear();
+                        DrawGraph.UnHighlightPath();
+                        var MinPathList = DrawGraph.LocalGraph.FindMinPath(Int32.Parse(Line));
+                        if (MinPathList != null)
+                        {
+                            foreach (var path in MinPathList)
+                            {
+                                DisplayList.AddItem(path);
+                            }
+                        }
+                    }
+                }
+            };
+            formHandler.clearToolStripMenuItem1.Click += (s, e) =>
+            {
+                if (!DisplayList.IsEmpty && Utils.Confirmation("You really want to clear the list?", "Clear list"))
+                {
+                    DisplayList.Clear();
+                    DrawGraph.UnHighlightPath();
+                }
+            };
+
+            if (args.Length > 0)
+            {
+                DrawGraph.LoadGraphFromGWFFile(args[0]);
+            }
 
             SelectTool(CurrentTool);
         }
@@ -119,20 +208,30 @@ namespace GraphWinForms
                             {
                                 if (!DrawGraph.IsEdgeExist(DrawGraph.Graph.SelectedVertices[0].Name, DrawGraph.Graph.SelectedVertices[1].Name))
                                 {
-                                    var Line = Utils.ShowInputDialog
+                                    var WeightLine = Utils.ShowInputDialog
                                     (
                                         "Create edge",
                                         "Edge weight",
                                         InputDialog.DialogType.Text
                                     );
-                                    if (Line != String.Empty)
+                                    if (WeightLine != String.Empty)
                                     {
-                                        DrawGraph.AddEdge
+                                        var LengthLine = Utils.ShowInputDialog
                                         (
-                                            DrawGraph.Graph.SelectedVertices[0].Name,
-                                            DrawGraph.Graph.SelectedVertices[1].Name,
-                                            Int32.Parse(Line)
+                                            "Create edge",
+                                            "Edge length",
+                                            InputDialog.DialogType.IntNumber
                                         );
+                                        if (LengthLine != String.Empty)
+                                        {
+                                            DrawGraph.AddEdge
+                                            (
+                                                DrawGraph.Graph.SelectedVertices[0].Name,
+                                                DrawGraph.Graph.SelectedVertices[1].Name,
+                                                Int32.Parse(WeightLine),
+                                                Int32.Parse(LengthLine)
+                                            );
+                                        }
                                     }
                                 }
                                 DrawGraph.RemoveSelection();
@@ -193,6 +292,21 @@ namespace GraphWinForms
                             }
                             break;
                         }
+                    case DrawTools.Center:
+                        {
+                            var vertex = DrawGraph.GetVertexByCoordinates(e.X, e.Y);
+                            List<GraphPath> shortestPaths;
+                            if (vertex != null)
+                            {
+                                DisplayList.Clear();
+                                shortestPaths = DrawGraph.LocalGraph.FindAllShortestPaths(vertex.Name);
+                                foreach (var path in shortestPaths)
+                                {
+                                    DisplayList.AddItem(path);
+                                }
+                            }
+                            break;
+                        }
                 }
             }
             if (e.Button == MouseButtons.Right)
@@ -222,19 +336,31 @@ namespace GraphWinForms
                             {
                                 if (DrawGraph.IsEdgeExist(DrawGraph.Graph.SelectedVertices[0].Name, DrawGraph.Graph.SelectedVertices[1].Name))
                                 {
-                                    var Line = Utils.ShowInputDialog
+                                    var WeightLine = Utils.ShowInputDialog
                                     (
                                         "Change edge weight",
                                         "Edge weight",
                                         InputDialog.DialogType.IntNumber
                                     );
-                                    if (Line != String.Empty)
+                                    var LengthLine = Utils.ShowInputDialog
+                                    (
+                                        "Change edge length",
+                                        "Edge length",
+                                        InputDialog.DialogType.IntNumber
+                                    );
+                                    if (WeightLine != String.Empty)
                                     {
                                         var firstVertex = DrawGraph.Graph.SelectedVertices[0];
                                         var secondVertex = DrawGraph.Graph.SelectedVertices[1];
-                                        DrawGraph.EditEdge(firstVertex, secondVertex, Int32.Parse(Line));
-                                        DisplayList.Clear();
+                                        DrawGraph.EditEdge(firstVertex, secondVertex, Int32.Parse(WeightLine), -1);
                                     }
+                                    if (LengthLine != String.Empty)
+                                    {
+                                        var firstVertex = DrawGraph.Graph.SelectedVertices[0];
+                                        var secondVertex = DrawGraph.Graph.SelectedVertices[1];
+                                        DrawGraph.EditEdge(firstVertex, secondVertex, -1, Int32.Parse(LengthLine));
+                                    }
+                                    DisplayList.Clear();
                                 }
                                 DrawGraph.RemoveSelection();
                                 DrawGraph.RedrawSheet();
@@ -266,6 +392,10 @@ namespace GraphWinForms
                             break;
                         }
                     case DrawTools.Deikstra:
+                        {
+                            break;
+                        }
+                    case DrawTools.Center:
                         {
                             break;
                         }
@@ -423,7 +553,8 @@ namespace GraphWinForms
         /// <param name="firstVertex">First vertex that current edge basing on</param>
         /// <param name="secondVertex">Second vertex that current edge basing on</param>
         /// <param name="weight">Edge weight</param>
-        public Edge (Vertex firstVertex, Vertex secondVertex, int weight, int length = 0)
+        /// <param name="length">Edge length</param>
+        public Edge (Vertex firstVertex, Vertex secondVertex, int weight, int length)
         {
             this.FirstVertex = firstVertex;
             this.SecondVertex = secondVertex;
@@ -444,7 +575,7 @@ namespace GraphWinForms
         /// <param name="length">Edge weight</param>
         public void SetLength(int length)
         {
-            if (length > 0) this.Weight = length;
+            if (length > 0) this.Length = length;
         }
         /// <summary>
         /// Allows to change edge vertices
@@ -615,7 +746,7 @@ namespace GraphWinForms
             }
             foreach (var edge in Graph.Edges)
             {
-                LocalGraph.AddEdge(edge.FirstVertex.Name, edge.SecondVertex.Name, edge.Weight);
+                LocalGraph.AddEdge(edge.FirstVertex.Name, edge.SecondVertex.Name, edge.Weight, edge.Length);
             }
         }
         /// <summary>
@@ -937,7 +1068,8 @@ namespace GraphWinForms
         /// <param name="firstVertexName">First vertex name</param>
         /// <param name="secondVertexName">Second vertex name</param>
         /// <param name="weight">Edge weight</param>
-        public static void AddEdge(string firstVertexName, string secondVertexName, int weight)
+        /// <param name="length">Edge length</param>
+        public static void AddEdge(string firstVertexName, string secondVertexName, int weight, int length)
         {
             if (firstVertexName != secondVertexName && weight > 0 && !IsEdgeExist(firstVertexName, secondVertexName))
             {
@@ -945,8 +1077,8 @@ namespace GraphWinForms
                 var SecondVertex = GetVertexByName(secondVertexName);
                 if (FirstVertex != null && SecondVertex != null)
                 {
-                    Graph.Edges.Add(new Edge(FirstVertex, SecondVertex, weight));
-                    LocalGraph.AddEdge(firstVertexName, secondVertexName, weight);
+                    Graph.Edges.Add(new Edge(FirstVertex, SecondVertex, weight, length));
+                    LocalGraph.AddEdge(firstVertexName, secondVertexName, weight, length);
                 }
             }
         }
@@ -1015,12 +1147,14 @@ namespace GraphWinForms
         /// </summary>
         /// <param name="edge">Edge</param>
         /// <param name="weight">Edge weight</param>
-        private static void EditEdge(Edge edge, int weight)
+        /// <param name="length">Edge length</param>
+        private static void EditEdge(Edge edge, int weight, int length)
         {
             if (edge != null)
             {
-                LocalGraph.EditEdge(edge.FirstVertex.Name, edge.SecondVertex.Name, weight);
+                LocalGraph.EditEdge(edge.FirstVertex.Name, edge.SecondVertex.Name, weight, length);
                 edge.SetWeight(weight);
+                edge.SetLength(length);
             }
         }
         /// <summary>
@@ -1029,10 +1163,11 @@ namespace GraphWinForms
         /// <param name="firstVertex">First vertex</param>
         /// <param name="secondVertex">Second vertex</param>
         /// <param name="weight">Edge weight</param>
-        public static void EditEdge(Vertex firstVertex, Vertex secondVertex, int weight)
+        /// <param name="length">Edge length</param>
+        public static void EditEdge(Vertex firstVertex, Vertex secondVertex, int weight, int length)
         {
             var Edge = GetEdgeByVertices(firstVertex, secondVertex);
-            EditEdge(Edge, weight);
+            EditEdge(Edge, weight, length);
         }
         /// <summary>
         /// Edit edge data
@@ -1040,10 +1175,11 @@ namespace GraphWinForms
         /// <param name="firstVertexName">First vertex name</param>
         /// <param name="secondVertexName">Second vertex name</param>
         /// <param name="weight">Edge weight</param>
-        public static void EditEdge(string firstVertexName, string secondVertexName, int weight)
+        /// <param name="length">Edge length</param>
+        public static void EditEdge(string firstVertexName, string secondVertexName, int weight, int length)
         {
             var Edge = GetEdgeByVerticesNames(firstVertexName, secondVertexName);
-            EditEdge(Edge, weight);
+            EditEdge(Edge, weight, length);
         }
         /// <summary>
         /// Removes edge from graph
@@ -1285,9 +1421,9 @@ namespace GraphWinForms
 
             var edgeLengthLen = edge.Length.ToString().Length;
             var edgeWeightLen = edge.Weight.ToString().Length;
-            var heightModifier = edgeWeightLen > edgeLengthLen ? edgeWeightLen : edgeLengthLen;
+            var widthModifier = Utils.FindMaxValue(edgeWeightLen, edgeLengthLen);
 
-            var defaultWidth = (DefaultSettings.LabelWidthModifier + (heightModifier - DefaultSettings.LabelWidthModifier) + 1) * DefaultSettings.VertexRadius;
+            var defaultWidth = (widthModifier + 1) * DefaultSettings.VertexRadius;
             var defaultHeight = DefaultSettings.LabelHeightModifier * DefaultSettings.VertexRadius;
 
             var rect = new Rectangle

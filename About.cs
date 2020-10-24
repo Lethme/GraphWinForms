@@ -15,6 +15,7 @@ namespace GraphWinForms
         public About()
         {
             InitializeComponent();
+            this.Icon = Icon.FromHandle(Properties.Resources.graph_icon.GetHicon());
         }
     }
 }

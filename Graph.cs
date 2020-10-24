@@ -30,7 +30,7 @@ namespace GraphWinForms
         /// </summary>
         /// <param name="connectedVertex">Vertex which new edge will be connected to</param>
         /// <param name="weight">Edge weight</param>
-        public GraphEdge(GraphVertex connectedVertex, int weight, int length = 0)
+        public GraphEdge(GraphVertex connectedVertex, int weight, int length)
         {
             ConnectedVertex = connectedVertex;
             EdgeWeight = weight;
@@ -100,9 +100,10 @@ namespace GraphWinForms
         /// </summary>
         /// <param name="vertex">Vertex which new edge will be connected to</param>
         /// <param name="edgeWeight">Edge weight</param>
-        public void AddEdge(GraphVertex vertex, int edgeWeight)
+        /// <param name="edgeLength">Edge length</param>
+        public void AddEdge(GraphVertex vertex, int edgeWeight, int edgeLength)
         {
-            AddEdge(new GraphEdge(vertex, edgeWeight));
+            AddEdge(new GraphEdge(vertex, edgeWeight, edgeLength));
         }
         /// <summary>
         /// Remove edge
@@ -262,8 +263,9 @@ namespace GraphWinForms
         /// <param name="firstVertexName">First vertex name</param>
         /// <param name="secondVertexName">Second vertex name</param>
         /// <param name="weight">Edge weight</param>
+        /// <param name="length">Edge length</param>
         /// <param name="orientation">Edge orientation</param>
-        public void AddEdge(string firstVertexName, string secondVertexName, int weight, EdgeOrientation orientation = EdgeOrientation.Binary)
+        public void AddEdge(string firstVertexName, string secondVertexName, int weight, int length, EdgeOrientation orientation = EdgeOrientation.Binary)
         {
             var FirstVertex = FindVertex(firstVertexName);
             var SecondVertex = FindVertex(secondVertexName);
@@ -273,13 +275,13 @@ namespace GraphWinForms
                 {
                     case EdgeOrientation.Single:
                         {
-                            FirstVertex.AddEdge(SecondVertex, weight);
+                            FirstVertex.AddEdge(SecondVertex, weight, length);
                             break;
                         }
                     case EdgeOrientation.Binary:
                         {
-                            FirstVertex.AddEdge(SecondVertex, weight);
-                            SecondVertex.AddEdge(FirstVertex, weight);
+                            FirstVertex.AddEdge(SecondVertex, weight, length);
+                            SecondVertex.AddEdge(FirstVertex, weight, length);
                             break;
                         }
                 }
@@ -314,12 +316,13 @@ namespace GraphWinForms
         /// <param name="firstVertexName">First vertex name</param>
         /// <param name="secondVertexName">Second vertex name</param>
         /// <param name="weight">Edge weight</param>
-        public void EditEdge(string firstVertexName, string secondVertexName, int weight)
+        /// <param name="length">Edge length</param>
+        public void EditEdge(string firstVertexName, string secondVertexName, int weight, int length)
         {
             GraphEdge FirstEdge, SecondEdge;
             FindEdge(firstVertexName, secondVertexName, out FirstEdge, out SecondEdge);
-            if (FirstEdge != null) FirstEdge.SetWeight(weight);
-            if (SecondEdge != null) SecondEdge.SetWeight(weight);
+            if (FirstEdge != null) { FirstEdge.SetWeight(weight); FirstEdge.SetLength(length); }
+            if (SecondEdge != null) { SecondEdge.SetWeight(weight); SecondEdge.SetLength(length); }
             Sort();
         }
         /// <summary>
@@ -375,6 +378,25 @@ namespace GraphWinForms
         {
             var deikstra = new Deikstra(this);
             return deikstra.FindShortestPath(firstVertexName, secondVertexName);
+        }
+        /// <summary>
+        /// Find all the shortest paths from stated vertex to every other one
+        /// </summary>
+        /// <param name="vertexName">Vertex name</param>
+        /// <returns>List of shortest paths</returns>
+        public List<GraphPath> FindAllShortestPaths(string vertexName)
+        {
+            var vertex = FindVertex(vertexName);
+            var shortestPaths = new List<GraphPath>();
+            if (vertex != null)
+            {
+                var deikstra = new Deikstra(this);
+                foreach (var v in Vertices)
+                {
+                    if (v != vertex) shortestPaths.Add(deikstra.FindShortestPath(vertex, v));
+                }
+            }
+            return shortestPaths;
         }
         /// <summary>
         /// Allows to get list of vertices connected to stated vertex

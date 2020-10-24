@@ -55,7 +55,7 @@ namespace GraphWinForms
         /// <summary>
         /// Default font for edge labels
         /// </summary>
-        public static Font EdgeFont { get; private set; } = new Font("Consolas", 12);
+        public static Font EdgeFont { get; private set; } = new Font("Consolas", 11);
         /// <summary>
         /// Default string format for labels
         /// </summary>

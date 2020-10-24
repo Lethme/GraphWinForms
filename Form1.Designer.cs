@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.panel2 = new System.Windows.Forms.Panel();
+            this.centerTool = new System.Windows.Forms.Button();
             this.deikstraTool = new System.Windows.Forms.Button();
             this.edgeTool = new System.Windows.Forms.Button();
             this.editTool = new System.Windows.Forms.Button();
@@ -55,8 +55,6 @@
             this.clearToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.testToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.test1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.display = new System.Windows.Forms.PictureBox();
             this.panel2.SuspendLayout();
@@ -68,6 +66,7 @@
             // 
             this.panel2.BackColor = System.Drawing.SystemColors.Window;
             this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel2.Controls.Add(this.centerTool);
             this.panel2.Controls.Add(this.deikstraTool);
             this.panel2.Controls.Add(this.edgeTool);
             this.panel2.Controls.Add(this.editTool);
@@ -79,12 +78,23 @@
             this.panel2.Size = new System.Drawing.Size(964, 64);
             this.panel2.TabIndex = 1;
             // 
+            // centerTool
+            // 
+            this.centerTool.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.centerTool.BackgroundImage = global::GraphWinForms.Properties.Resources.center1;
+            this.centerTool.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.centerTool.Location = new System.Drawing.Point(649, 1);
+            this.centerTool.Name = "centerTool";
+            this.centerTool.Size = new System.Drawing.Size(60, 60);
+            this.centerTool.TabIndex = 7;
+            this.centerTool.UseVisualStyleBackColor = true;
+            // 
             // deikstraTool
             // 
             this.deikstraTool.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.deikstraTool.BackgroundImage = global::GraphWinForms.Properties.Resources.way;
             this.deikstraTool.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.deikstraTool.Location = new System.Drawing.Point(616, 1);
+            this.deikstraTool.Location = new System.Drawing.Point(583, 1);
             this.deikstraTool.Name = "deikstraTool";
             this.deikstraTool.Size = new System.Drawing.Size(60, 60);
             this.deikstraTool.TabIndex = 6;
@@ -95,7 +105,7 @@
             this.edgeTool.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.edgeTool.BackgroundImage = global::GraphWinForms.Properties.Resources.edge;
             this.edgeTool.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.edgeTool.Location = new System.Drawing.Point(418, 1);
+            this.edgeTool.Location = new System.Drawing.Point(385, 1);
             this.edgeTool.Name = "edgeTool";
             this.edgeTool.Size = new System.Drawing.Size(60, 60);
             this.edgeTool.TabIndex = 2;
@@ -106,7 +116,7 @@
             this.editTool.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.editTool.BackgroundImage = global::GraphWinForms.Properties.Resources.edit;
             this.editTool.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.editTool.Location = new System.Drawing.Point(484, 1);
+            this.editTool.Location = new System.Drawing.Point(451, 1);
             this.editTool.Name = "editTool";
             this.editTool.Size = new System.Drawing.Size(60, 60);
             this.editTool.TabIndex = 5;
@@ -117,7 +127,7 @@
             this.deleteTool.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.deleteTool.BackgroundImage = global::GraphWinForms.Properties.Resources.delete;
             this.deleteTool.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.deleteTool.Location = new System.Drawing.Point(550, 1);
+            this.deleteTool.Location = new System.Drawing.Point(517, 1);
             this.deleteTool.Name = "deleteTool";
             this.deleteTool.Size = new System.Drawing.Size(60, 60);
             this.deleteTool.TabIndex = 3;
@@ -129,7 +139,7 @@
             this.cursorTool.BackgroundImage = global::GraphWinForms.Properties.Resources.cursor;
             this.cursorTool.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.cursorTool.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-            this.cursorTool.Location = new System.Drawing.Point(286, 1);
+            this.cursorTool.Location = new System.Drawing.Point(253, 1);
             this.cursorTool.Name = "cursorTool";
             this.cursorTool.Size = new System.Drawing.Size(60, 60);
             this.cursorTool.TabIndex = 0;
@@ -140,7 +150,7 @@
             this.vertexTool.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.vertexTool.BackgroundImage = global::GraphWinForms.Properties.Resources.vertex;
             this.vertexTool.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.vertexTool.Location = new System.Drawing.Point(352, 1);
+            this.vertexTool.Location = new System.Drawing.Point(319, 1);
             this.vertexTool.Name = "vertexTool";
             this.vertexTool.Size = new System.Drawing.Size(60, 60);
             this.vertexTool.TabIndex = 1;
@@ -178,7 +188,6 @@
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
             this.openToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.openToolStripMenuItem.Text = "Open";
-            this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
             // 
@@ -194,14 +203,12 @@
             this.saveAsImageFileToolStripMenuItem.Name = "saveAsImageFileToolStripMenuItem";
             this.saveAsImageFileToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
             this.saveAsImageFileToolStripMenuItem.Text = "Save as Image File";
-            this.saveAsImageFileToolStripMenuItem.Click += new System.EventHandler(this.saveAsImageFileToolStripMenuItem_Click);
             // 
             // saveAsGWFFileToolStripMenuItem
             // 
             this.saveAsGWFFileToolStripMenuItem.Name = "saveAsGWFFileToolStripMenuItem";
             this.saveAsGWFFileToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
             this.saveAsGWFFileToolStripMenuItem.Text = "Save as GWF File";
-            this.saveAsGWFFileToolStripMenuItem.Click += new System.EventHandler(this.saveAsGWFFileToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
@@ -213,14 +220,12 @@
             this.associateFileTypeToolStripMenuItem.Name = "associateFileTypeToolStripMenuItem";
             this.associateFileTypeToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.associateFileTypeToolStripMenuItem.Text = "Associate File Type";
-            this.associateFileTypeToolStripMenuItem.Click += new System.EventHandler(this.associateFileTypeToolStripMenuItem_Click);
             // 
             // unassociateFileTypeToolStripMenuItem
             // 
             this.unassociateFileTypeToolStripMenuItem.Name = "unassociateFileTypeToolStripMenuItem";
             this.unassociateFileTypeToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.unassociateFileTypeToolStripMenuItem.Text = "Unassociate File Type";
-            this.unassociateFileTypeToolStripMenuItem.Click += new System.EventHandler(this.unassociateFileTypeToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
@@ -232,7 +237,6 @@
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.exitToolStripMenuItem.Text = "Exit";
-            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
             // graphToolStripMenuItem1
             // 
@@ -247,21 +251,19 @@
             // findMinimalPathToolStripMenuItem
             // 
             this.findMinimalPathToolStripMenuItem.Name = "findMinimalPathToolStripMenuItem";
-            this.findMinimalPathToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.findMinimalPathToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.findMinimalPathToolStripMenuItem.Text = "Find minimal path";
-            this.findMinimalPathToolStripMenuItem.Click += new System.EventHandler(this.findMinimalPathToolStripMenuItem_Click);
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(168, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(177, 6);
             // 
             // clearToolStripMenuItem
             // 
             this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
-            this.clearToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.clearToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.clearToolStripMenuItem.Text = "Clear";
-            this.clearToolStripMenuItem.Click += new System.EventHandler(this.clearToolStripMenuItem_Click);
             // 
             // listToolStripMenuItem1
             // 
@@ -274,16 +276,13 @@
             // clearToolStripMenuItem1
             // 
             this.clearToolStripMenuItem1.Name = "clearToolStripMenuItem1";
-            this.clearToolStripMenuItem1.Size = new System.Drawing.Size(101, 22);
+            this.clearToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.clearToolStripMenuItem1.Text = "Clear";
-            this.clearToolStripMenuItem1.Click += new System.EventHandler(this.clearToolStripMenuItem1_Click);
             // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.aboutToolStripMenuItem1,
-            this.testToolStripMenuItem,
-            this.test1ToolStripMenuItem});
+            this.aboutToolStripMenuItem1});
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.aboutToolStripMenuItem.Text = "Help";
@@ -291,23 +290,8 @@
             // aboutToolStripMenuItem1
             // 
             this.aboutToolStripMenuItem1.Name = "aboutToolStripMenuItem1";
-            this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(170, 22);
+            this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.aboutToolStripMenuItem1.Text = "About";
-            this.aboutToolStripMenuItem1.Click += new System.EventHandler(this.aboutToolStripMenuItem1_Click);
-            // 
-            // testToolStripMenuItem
-            // 
-            this.testToolStripMenuItem.Name = "testToolStripMenuItem";
-            this.testToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
-            this.testToolStripMenuItem.Text = "Show graphic part";
-            this.testToolStripMenuItem.Click += new System.EventHandler(this.testToolStripMenuItem_Click);
-            // 
-            // test1ToolStripMenuItem
-            // 
-            this.test1ToolStripMenuItem.Name = "test1ToolStripMenuItem";
-            this.test1ToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
-            this.test1ToolStripMenuItem.Text = "Show local part";
-            this.test1ToolStripMenuItem.Click += new System.EventHandler(this.test1ToolStripMenuItem_Click);
             // 
             // listBox1
             // 
@@ -336,12 +320,10 @@
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.menuStrip1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.Text = "Graph Builder";
-            this.Load += new System.EventHandler(this.Form1_Load);
             this.panel2.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
@@ -353,21 +335,20 @@
 
         #endregion
         private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.MenuStrip menuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveAsImageFileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveAsGWFFileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem1;
+        public System.Windows.Forms.MenuStrip menuStrip1;
+        public System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem saveAsImageFileToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem saveAsGWFFileToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem1;
+        public System.Windows.Forms.ToolStripMenuItem associateFileTypeToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem unassociateFileTypeToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        private System.Windows.Forms.ToolStripMenuItem associateFileTypeToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem unassociateFileTypeToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem testToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem test1ToolStripMenuItem;
         public System.Windows.Forms.Button deikstraTool;
         public System.Windows.Forms.Button editTool;
         public System.Windows.Forms.Button deleteTool;
@@ -375,13 +356,13 @@
         public System.Windows.Forms.Button vertexTool;
         public System.Windows.Forms.Button cursorTool;
         public System.Windows.Forms.ListBox listBox1;
-        private System.Windows.Forms.ToolStripMenuItem graphToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem findMinimalPathToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem graphToolStripMenuItem1;
+        public System.Windows.Forms.ToolStripMenuItem findMinimalPathToolStripMenuItem;
         public System.Windows.Forms.PictureBox display;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
-        private System.Windows.Forms.ToolStripMenuItem clearToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem listToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem clearToolStripMenuItem1;
+        public System.Windows.Forms.ToolStripMenuItem clearToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem listToolStripMenuItem1;
+        public System.Windows.Forms.ToolStripMenuItem clearToolStripMenuItem1;
+        public System.Windows.Forms.Button centerTool;
     }
 }
 

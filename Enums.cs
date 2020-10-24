@@ -62,7 +62,11 @@ namespace GraphWinForms
         /// <summary>
         /// Deikstra algorithm vertex selecting tool
         /// </summary>
-        Deikstra
+        Deikstra,
+        /// <summary>
+        /// Tool to find all shortest paths from any vertex
+        /// </summary>
+        Center
     }
     /// <summary>
     /// Graph savig type constants
