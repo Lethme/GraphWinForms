@@ -21,6 +21,28 @@ namespace GraphWinForms
             display.BackColor = Color.White;
             display.BorderStyle = BorderStyle.FixedSingle;
 
+            this.Activated += delegate { DrawTool.LoseFocus(); };
+
+            DrawGraph.CreateGraphics(display);
+            DrawTool.SetFormHandler(this);
+
+            if (args.Length > 0)
+            {
+                DrawGraph.LoadGraphFromGWFFile(args[0]);
+            }
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            foreach (var tool in Controls.OfType<Button>())
+            {
+                tool.Click += (s, ev) =>
+                {
+                    DrawGraph.UnHighlightPath();
+                    DisplayList.LoseFocus();
+                };
+            }
+
             var ToolTip = new ToolTip();
             ToolTip.SetToolTip(cursorTool, "Basic tool");
             ToolTip.SetToolTip(vertexTool, "Vetex building tool");
@@ -29,56 +51,35 @@ namespace GraphWinForms
             ToolTip.SetToolTip(deleteTool, "Delete graph elements tool");
             ToolTip.SetToolTip(deikstraTool, "Find a shortest path between two selected vertices");
 
-            DrawGraph.CreateGraphics(display);
-            DrawTool.SetFormHandler(this);
-
-            this.Activated += delegate { DrawTool.LoseFocus(); };
-
-            if (args.Length > 0)
+            cursorTool.Click += (s, ev) =>
             {
-                DrawGraph.LoadGraphFromGWFFile(args[0]);
-            }
-        }
+                DrawTool.SetTool(DrawTools.Cursor);
+            };
 
-        private void cursorTool_Click(object sender, EventArgs e)
-        {
-            DrawGraph.UnHighlightPath();
-            DisplayList.LoseFocus();
-            DrawTool.SetTool(DrawTools.Cursor);
-        }
+            vertexTool.Click += (s, ev) =>
+            {
+                DrawTool.SetTool(DrawTools.Vertex);
+            };
 
-        private void vertexTool_Click(object sender, EventArgs e)
-        {
-            DrawGraph.UnHighlightPath();
-            DisplayList.LoseFocus();
-            DrawTool.SetTool(DrawTools.Vertex);
-        }
+            edgeTool.Click += (s, ev) =>
+            {
+                DrawTool.SetTool(DrawTools.Edge);
+            };
 
-        private void edgeTool_Click(object sender, EventArgs e)
-        {
-            DrawGraph.UnHighlightPath();
-            DisplayList.LoseFocus();
-            DrawTool.SetTool(DrawTools.Edge);
-        }
-        private void editTool_Click(object sender, EventArgs e)
-        {
-            DrawGraph.UnHighlightPath();
-            DisplayList.LoseFocus();
-            DrawTool.SetTool(DrawTools.Edit);
-        }
+            editTool.Click += (s, ev) =>
+            {
+                DrawTool.SetTool(DrawTools.Edit);
+            };
 
-        private void deleteTool_Click(object sender, EventArgs e)
-        {
-            DrawGraph.UnHighlightPath();
-            DisplayList.LoseFocus();
-            DrawTool.SetTool(DrawTools.Delete);
-        }
+            deleteTool.Click += (s, ev) =>
+            {
+                DrawTool.SetTool(DrawTools.Delete);
+            };
 
-        private void deikstraTool_Click(object sender, EventArgs e)
-        {
-            DrawGraph.UnHighlightPath();
-            DisplayList.LoseFocus();
-            DrawTool.SetTool(DrawTools.Deikstra);
+            deikstraTool.Click += (s, ev) =>
+            {
+                DrawTool.SetTool(DrawTools.Deikstra);
+            };
         }
 
         private void saveImageTool_Click(object sender, EventArgs e)
@@ -111,7 +112,10 @@ namespace GraphWinForms
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Application.Exit();
+            if (Utils.Confirmation("You really want to exit?", "Exit"))
+            {
+                Application.Exit();
+            }
         }
 
         private void associateFileTypeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -193,19 +197,10 @@ namespace GraphWinForms
                     {
                         foreach (var path in MinPathList)
                         {
-                            //MessageBox.Show(path.ToString());
                             DisplayList.AddItem(path);
                         }
                     }
                 }
-            }
-        }
-
-        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (DisplayList.SelectedIndex != -1)
-            {
-                DrawGraph.HighlightPath(DisplayList.GetItem<GraphPath>().StringPath, Color.DeepSkyBlue, Color.LawnGreen, Color.Tomato);
             }
         }
 

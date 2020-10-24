@@ -27,7 +27,7 @@ namespace GraphWinForms
         /// <summary>
         /// Default label height modifier
         /// </summary>
-        public const int LabelHeightModifier = 2;
+        public const int LabelHeightModifier = 4;
         /// <summary>
         /// Default color
         /// </summary>
@@ -36,6 +36,18 @@ namespace GraphWinForms
         /// Default selection color
         /// </summary>
         public static Color SelectionColor { get; private set; } = Color.Red;
+        /// <summary>
+        /// Default path color
+        /// </summary>
+        public static Color PathColor { get; private set; } = Color.DeepSkyBlue;
+        /// <summary>
+        /// Default color for the first vertex on the path
+        /// </summary>
+        public static Color PathBeginColor { get; private set; } = Color.LawnGreen;
+        /// <summary>
+        /// Default color for the last vertex on the path
+        /// </summary>
+        public static Color PathEndColor { get; private set; } = Color.Tomato;
         /// <summary>
         /// Default font for vertex labels
         /// </summary>

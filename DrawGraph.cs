@@ -11,18 +11,6 @@ using Newtonsoft.Json;
 namespace GraphWinForms
 {
     /// <summary>
-    /// Represents drawing tools constants
-    /// </summary>
-    public enum DrawTools
-    {
-        Cursor,
-        Vertex,
-        Edge,
-        Edit,
-        Delete,
-        Deikstra
-    }
-    /// <summary>
     /// Represents tool selector class
     /// </summary>
     public static class DrawTool
@@ -36,6 +24,10 @@ namespace GraphWinForms
         /// </summary>
         public static Form1 FormHandler { get; private set; }
         /// <summary>
+        /// Tool buttons handlers list
+        /// </summary>
+        public static List<Button> ToolHandlers { get; private set; } = new List<Button>();
+        /// <summary>
         /// Base application form handler setter method
         /// </summary>
         /// <param name="formHandler">Base application form handler</param>
@@ -43,7 +35,15 @@ namespace GraphWinForms
         { 
             FormHandler = formHandler;
             DisplayList.SetDisplayHandler(formHandler.listBox1);
-            SelectTool();
+
+            ToolHandlers.Add(formHandler.cursorTool);
+            ToolHandlers.Add(formHandler.vertexTool);
+            ToolHandlers.Add(formHandler.edgeTool);
+            ToolHandlers.Add(formHandler.editTool);
+            ToolHandlers.Add(formHandler.deleteTool);
+            ToolHandlers.Add(formHandler.deikstraTool);
+
+            SelectTool(CurrentTool);
         }
         /// <summary>
         /// Sets drawing tool from drawing tools constants
@@ -54,7 +54,7 @@ namespace GraphWinForms
             if (!Enum.IsDefined(typeof(DrawTools), (int)Tool))
                 CurrentTool = DrawTools.Cursor;
             CurrentTool = Tool;
-            SelectTool();
+            SelectTool(Tool);
         }
         /// <summary>
         /// Removes controls focus
@@ -66,79 +66,21 @@ namespace GraphWinForms
         /// <summary>
         /// Enables or disables tools controls in application form
         /// </summary>
-        private static void SelectTool()
+        /// <param name="Tool">Draw tool</param>
+        private static void SelectTool(DrawTools Tool)
         {
-            switch (CurrentTool)
+            int toolNumber = 0;
+            foreach (var toolHandler in ToolHandlers)
             {
-                case DrawTools.Cursor:
-                    {
-                        FormHandler.cursorTool.Enabled = false;
-                        FormHandler.vertexTool.Enabled = true;
-                        FormHandler.edgeTool.Enabled = true;
-                        FormHandler.editTool.Enabled = true;
-                        FormHandler.deleteTool.Enabled = true;
-                        FormHandler.deikstraTool.Enabled = true;
-                        break;
-                    }
-                case DrawTools.Vertex:
-                    {
-                        FormHandler.cursorTool.Enabled = true;
-                        FormHandler.vertexTool.Enabled = false;
-                        FormHandler.edgeTool.Enabled = true;
-                        FormHandler.editTool.Enabled = true;
-                        FormHandler.deleteTool.Enabled = true;
-                        FormHandler.deikstraTool.Enabled = true;
-                        break;
-                    }
-                case DrawTools.Edge:
-                    {
-                        FormHandler.cursorTool.Enabled = true;
-                        FormHandler.vertexTool.Enabled = true;
-                        FormHandler.edgeTool.Enabled = false;
-                        FormHandler.editTool.Enabled = true;
-                        FormHandler.deleteTool.Enabled = true;
-                        FormHandler.deikstraTool.Enabled = true;
-                        break;
-                    }
-                case DrawTools.Edit:
-                    {
-                        FormHandler.cursorTool.Enabled = true;
-                        FormHandler.vertexTool.Enabled = true;
-                        FormHandler.edgeTool.Enabled = true;
-                        FormHandler.editTool.Enabled = false;
-                        FormHandler.deleteTool.Enabled = true;
-                        FormHandler.deikstraTool.Enabled = true;
-                        break;
-                    }
-                case DrawTools.Delete:
-                    {
-                        FormHandler.cursorTool.Enabled = true;
-                        FormHandler.vertexTool.Enabled = true;
-                        FormHandler.edgeTool.Enabled = true;
-                        FormHandler.editTool.Enabled = true;
-                        FormHandler.deleteTool.Enabled = false;
-                        FormHandler.deikstraTool.Enabled = true;
-                        break;
-                    }
-                case DrawTools.Deikstra:
-                    {
-                        FormHandler.cursorTool.Enabled = true;
-                        FormHandler.vertexTool.Enabled = true;
-                        FormHandler.edgeTool.Enabled = true;
-                        FormHandler.editTool.Enabled = true;
-                        FormHandler.deleteTool.Enabled = true;
-                        FormHandler.deikstraTool.Enabled = false;
-                        break;
-                    }
+                if (toolNumber++ == (int)Tool) toolHandler.Enabled = false;
+                else toolHandler.Enabled = true;
             }
             LoseFocus();
         }
         /// <summary>
         /// Basic mouse click handler for PictureBox control
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public static void BasicDrawHandler(object sender, MouseEventArgs e)
+        public static MouseEventHandler BasicDrawHandler = (sender, e) =>
         {
             DrawGraph.UnHighlightPath();
             DisplayList.LoseFocus();
@@ -163,11 +105,6 @@ namespace GraphWinForms
                                 );
                                 DrawGraph.AddVertex(e.X, e.Y, Line);
                                 DrawGraph.RedrawSheet();
-                                /*if (Line != String.Empty)
-                                {
-                                    DrawGraph.AddVertex(e.X, e.Y, Line);
-                                    DrawGraph.RedrawSheet();
-                                }*/
                             }
                             break;
                         }
@@ -217,6 +154,7 @@ namespace GraphWinForms
                                 if (Line != String.Empty)
                                 {
                                     DrawGraph.EditVertex(vertex, Line);
+                                    DisplayList.Clear();
                                     DrawGraph.RedrawSheet();
                                 }
                             }
@@ -231,6 +169,7 @@ namespace GraphWinForms
                                 {
                                     DrawGraph.RemoveVertex(vertex);
                                     DrawGraph.RedrawSheet();
+                                    DisplayList.Clear();
                                 }
                             }
                             break;
@@ -294,6 +233,7 @@ namespace GraphWinForms
                                         var firstVertex = DrawGraph.Graph.SelectedVertices[0];
                                         var secondVertex = DrawGraph.Graph.SelectedVertices[1];
                                         DrawGraph.EditEdge(firstVertex, secondVertex, Int32.Parse(Line));
+                                        DisplayList.Clear();
                                     }
                                 }
                                 DrawGraph.RemoveSelection();
@@ -317,6 +257,7 @@ namespace GraphWinForms
                                         "Delete edge"))
                                     {
                                         DrawGraph.RemoveEdge(DrawGraph.Graph.SelectedVertices[0], DrawGraph.Graph.SelectedVertices[1]);
+                                        DisplayList.Clear();
                                     }
                                 }
                                 DrawGraph.RemoveSelection();
@@ -330,7 +271,7 @@ namespace GraphWinForms
                         }
                 }
             }
-        }
+        };
     }
     /// <summary>
     /// Graphic vertex class
@@ -469,6 +410,10 @@ namespace GraphWinForms
         /// </summary>
         public int Weight { get; private set; }
         /// <summary>
+        /// Edge length
+        /// </summary>
+        public int Length { get; private set; }
+        /// <summary>
         /// Edge color
         /// </summary>
         [JsonIgnore] public Color Color { get; private set; } = DefaultSettings.Color;
@@ -478,11 +423,12 @@ namespace GraphWinForms
         /// <param name="firstVertex">First vertex that current edge basing on</param>
         /// <param name="secondVertex">Second vertex that current edge basing on</param>
         /// <param name="weight">Edge weight</param>
-        public Edge (Vertex firstVertex, Vertex secondVertex, int weight)
+        public Edge (Vertex firstVertex, Vertex secondVertex, int weight, int length = 0)
         {
             this.FirstVertex = firstVertex;
             this.SecondVertex = secondVertex;
             this.Weight = weight;
+            this.Length = length;
         }
         /// <summary>
         /// Allows to change edge weight
@@ -491,6 +437,14 @@ namespace GraphWinForms
         public void SetWeight(int weight)
         {
             if (weight > 0) this.Weight = weight;
+        }
+        /// <summary>
+        /// Allows to change edge length
+        /// </summary>
+        /// <param name="length">Edge weight</param>
+        public void SetLength(int length)
+        {
+            if (length > 0) this.Weight = length;
         }
         /// <summary>
         /// Allows to change edge vertices
@@ -562,16 +516,16 @@ namespace GraphWinForms
         /// Sort vertices list
         /// </summary>
         /// <param name="Order">Sort order</param>
-        public void Sort(SortOrder Order = SortOrder.Ascending)
+        public void Sort(SortType Order = SortType.Ascending)
         {
             switch (Order)
             {
-                case SortOrder.Ascending:
+                case SortType.Ascending:
                     {
                         Vertices.Sort((x, y) => x.Name.CompareTo(y.Name));
                         break;
                     }
-                case SortOrder.Descending:
+                case SortType.Descending:
                     {
                         Vertices.Sort((x, y) => y.Name.CompareTo(x.Name));
                         break;
@@ -645,7 +599,7 @@ namespace GraphWinForms
             {
                 ClearGraph();
                 Graph = graph;
-                Graph.Sort(SortOrder.Ascending);
+                Graph.Sort(SortType.Ascending);
                 DisplayList.Clear();
                 InitializeLocalGraph();
             }
@@ -699,34 +653,6 @@ namespace GraphWinForms
         public static GraphVertex ConvertVertexToGraphVertex(Vertex vertex)
         {
             return LocalGraph.FindVertex(vertex.Name);
-        }
-        /// <summary>
-        /// Graph savig type constants
-        /// </summary>
-        public enum SaveType
-        {
-            /// <summary>
-            /// Saving methods will show all the dialogs
-            /// </summary>
-            Normal,
-            /// <summary>
-            /// Saving methods won't show any dialogs
-            /// </summary>
-            Silent
-        }
-        /// <summary>
-        /// Graph loading type constants
-        /// </summary>
-        public enum LoadType
-        {
-            /// <summary>
-            /// Loading methods will show all the dialogs
-            /// </summary>
-            Normal,
-            /// <summary>
-            /// Loading methods won't show any dialogs
-            /// </summary>
-            Silent
         }
         /// <summary>
         /// Represents saving graph as image method
@@ -1001,7 +927,7 @@ namespace GraphWinForms
                     Graph.Vertices.Add(new Vertex(xPos, yPos, Name));
                     LocalGraph.AddVertex(Name);
                     Graph.CurrentNumber++;
-                    Graph.Sort(SortOrder.Ascending);
+                    Graph.Sort(SortType.Ascending);
                 }
             }
         }
@@ -1050,7 +976,7 @@ namespace GraphWinForms
                         }
                     }
                     vertex.SetName(newName);
-                    Graph.Sort(SortOrder.Ascending);
+                    Graph.Sort(SortType.Ascending);
                 }
                 vertex.SetRadius(newRadius);
             }
@@ -1079,7 +1005,7 @@ namespace GraphWinForms
                         }
                     }
                     vertex.SetName(newName);
-                    Graph.Sort(SortOrder.Ascending);
+                    Graph.Sort(SortType.Ascending);
                 }
                 vertex.SetRadius(newRadius);
             }
@@ -1167,7 +1093,7 @@ namespace GraphWinForms
                 RemoveEdge(edge);
             }
             Graph.Vertices.Remove(vertex);
-            Graph.Sort(SortOrder.Ascending);
+            Graph.Sort(SortType.Ascending);
             LocalGraph.RemoveVertex(vertex.Name);
         }
         /// <summary>
@@ -1356,7 +1282,12 @@ namespace GraphWinForms
 
             var centerX = (edge.FirstVertex.X + edge.SecondVertex.X) / 2;
             var centerY = (edge.FirstVertex.Y + edge.SecondVertex.Y) / 2;
-            var defaultWidth = (DefaultSettings.LabelWidthModifier + (edge.Weight.ToString().Length - DefaultSettings.LabelWidthModifier) + 1) * DefaultSettings.VertexRadius;
+
+            var edgeLengthLen = edge.Length.ToString().Length;
+            var edgeWeightLen = edge.Weight.ToString().Length;
+            var heightModifier = edgeWeightLen > edgeLengthLen ? edgeWeightLen : edgeLengthLen;
+
+            var defaultWidth = (DefaultSettings.LabelWidthModifier + (heightModifier - DefaultSettings.LabelWidthModifier) + 1) * DefaultSettings.VertexRadius;
             var defaultHeight = DefaultSettings.LabelHeightModifier * DefaultSettings.VertexRadius;
 
             var rect = new Rectangle
@@ -1369,7 +1300,7 @@ namespace GraphWinForms
             Graphics.FillRectangle(Brushes.White, rect);
             Graphics.DrawString
             (
-                edge.Weight.ToString(),
+                $"{edge.Weight}\n{edge.Length}",
                 DefaultSettings.EdgeFont,
                 Brushes.Black,
                 rect,

@@ -8,44 +8,30 @@ using System.Windows.Forms;
 namespace GraphWinForms
 {
     /// <summary>
-    /// Sorting type
-    /// </summary>
-    public enum SortOrder
-    {
-        /// <summary>
-        /// Sorting by values ascending
-        /// </summary>
-        Ascending,
-        /// <summary>
-        /// Sorting by values descending
-        /// </summary>
-        Descending
-    }
-    /// <summary>
-    /// Информация о вершине
+    /// Vertex information
     /// </summary>
     public class GraphVertexInfo
     {
         /// <summary>
-        /// Вершина
+        /// Vertex
         /// </summary>
         public GraphVertex Vertex { get; set; }
         /// <summary>
-        /// Не посещенная вершина
+        /// Check if vertex is already visited
         /// </summary>
         public bool IsUnvisited { get; set; }
         /// <summary>
-        /// Сумма весов ребер
+        /// Edge weight sum
         /// </summary>
         public int EdgesWeightSum { get; set; }
         /// <summary>
-        /// Предыдущая вершина
+        /// Previous vertex
         /// </summary>
         public GraphVertex PreviousVertex { get; set; }
         /// <summary>
-        /// Конструктор
+        /// Vertex info constructor
         /// </summary>
-        /// <param name="vertex">Вершина</param>
+        /// <param name="vertex">Vertex</param>
         public GraphVertexInfo(GraphVertex vertex)
         {
             Vertex = vertex;
@@ -55,46 +41,46 @@ namespace GraphWinForms
         }
     }
     /// <summary>
-    /// Алгоритм Дейкстры
+    /// Deikstra algoritm
     /// </summary>
     public class Deikstra
     {
         /// <summary>
         /// Graph
         /// </summary>
-        Graph graph;
+        private Graph Graph { get; set; }
         /// <summary>
         /// Vertices info
         /// </summary>
-        List<GraphVertexInfo> infos;
+        private List<GraphVertexInfo> InfoList { get; set; }
         /// <summary>
-        /// Конструктор
+        /// Deikstra constructor
         /// </summary>
-        /// <param name="graph">Граф</param>
+        /// <param name="graph">Graph</param>
         public Deikstra(Graph graph)
         {
             if (graph == null) throw new NullReferenceException();
-            this.graph = graph;
+            this.Graph = graph;
         }
         /// <summary>
-        /// Инициализация информации
+        /// Vertices info initialization
         /// </summary>
-        void InitInfo()
+        private void InitInfo()
         {
-            infos = new List<GraphVertexInfo>();
-            foreach (var vertex in graph.Vertices)
+            InfoList = new List<GraphVertexInfo>();
+            foreach (var vertex in Graph.Vertices)
             {
-                infos.Add(new GraphVertexInfo(vertex));
+                InfoList.Add(new GraphVertexInfo(vertex));
             }
         }
         /// <summary>
-        /// Получение информации о вершине графа
+        /// Get vertex info
         /// </summary>
-        /// <param name="vertex">Вершина</param>
-        /// <returns>Информация о вершине</returns>
-        GraphVertexInfo GetVertexInfo(GraphVertex vertex)
+        /// <param name="vertex">Vertex</param>
+        /// <returns>Vertex info</returns>
+        private GraphVertexInfo GetVertexInfo(GraphVertex vertex)
         {
-            foreach (var item in infos)
+            foreach (var item in InfoList)
             {
                 if (item.Vertex.Equals(vertex))
                 {
@@ -105,14 +91,14 @@ namespace GraphWinForms
             return null;
         }
         /// <summary>
-        /// Поиск непосещенной вершины с минимальным значением суммы
+        /// Find unvisited vertex with minimal weight sum
         /// </summary>
-        /// <returns>Информация о вершине</returns>
+        /// <returns>Vertex info</returns>
         public GraphVertexInfo FindUnvisitedVertexWithMinSum()
         {
             var minValue = int.MaxValue;
             GraphVertexInfo minVertexInfo = null;
-            foreach (var i in infos)
+            foreach (var i in InfoList)
             {
                 if (i.IsUnvisited && i.EdgesWeightSum < minValue)
                 {
@@ -124,25 +110,25 @@ namespace GraphWinForms
             return minVertexInfo;
         }
         /// <summary>
-        /// Поиск кратчайшего пути по названиям вершин
+        /// Search a shortest path between two vertices stated by their names
         /// </summary>
-        /// <param name="startName">Название стартовой вершины</param>
-        /// <param name="finishName">Название финишной вершины</param>
-        /// <returns>Кратчайший путь</returns>
-        public GraphPath FindShortestPath(string startName, string finishName)
+        /// <param name="firstVertexName">First vertex name</param>
+        /// <param name="secondVertexName">Second vertex name</param>
+        /// <returns>Shortest path</returns>
+        public GraphPath FindShortestPath(string firstVertexName, string secondVertexName)
         {
-            return FindShortestPath(graph.FindVertex(startName), graph.FindVertex(finishName));
+            return FindShortestPath(Graph.FindVertex(firstVertexName), Graph.FindVertex(secondVertexName));
         }
         /// <summary>
-        /// Поиск кратчайшего пути по вершинам
+        /// Search a shortest path between two vertices
         /// </summary>
-        /// <param name="startVertex">Стартовая вершина</param>
-        /// <param name="finishVertex">Финишная вершина</param>
+        /// <param name="firstVertex">First vertex</param>
+        /// <param name="secondVertex">Second vertex</param>
         /// <returns>Кратчайший путь</returns>
-        public GraphPath FindShortestPath(GraphVertex startVertex, GraphVertex finishVertex)
+        public GraphPath FindShortestPath(GraphVertex firstVertex, GraphVertex secondVertex)
         {
             InitInfo();
-            var first = GetVertexInfo(startVertex);
+            var first = GetVertexInfo(firstVertex);
             first.EdgesWeightSum = 0;
             while (true)
             {
@@ -155,13 +141,13 @@ namespace GraphWinForms
                 SetSumToNextVertex(current);
             }
 
-            return new GraphPath(GetPath(startVertex, finishVertex), GetVertexInfo(finishVertex).EdgesWeightSum);
+            return GetPath(secondVertex);
         }
         /// <summary>
-        /// Вычисление суммы весов ребер для следующей вершины
+        /// Calculate edge weight sum for the next vertex
         /// </summary>
-        /// <param name="info">Информация о текущей вершине</param>
-        void SetSumToNextVertex(GraphVertexInfo info)
+        /// <param name="info">Current vertex info</param>
+        private void SetSumToNextVertex(GraphVertexInfo info)
         {
             info.IsUnvisited = false;
             foreach (var e in info.Vertex.Edges)
@@ -176,21 +162,21 @@ namespace GraphWinForms
             }
         }
         /// <summary>
-        /// Формирование пути
+        /// Path formation
         /// </summary>
-        /// <param name="startVertex">Начальная вершина</param>
-        /// <param name="endVertex">Конечная вершина</param>
-        /// <returns>Путь</returns>
-        List<GraphVertex> GetPath(GraphVertex startVertex, GraphVertex endVertex)
+        /// <param name="endVertex">End vertex</param>
+        /// <returns>Path</returns>
+        private GraphPath GetPath(GraphVertex endVertex)
         {
+            var tempEndVertex = endVertex;
             var Path = new List<GraphVertex>();
-            while (endVertex != null)
+            while (tempEndVertex != null)
             {
-                Path.Insert(0, endVertex);
-                endVertex = GetVertexInfo(endVertex).PreviousVertex;
+                Path.Insert(0, tempEndVertex);
+                tempEndVertex = GetVertexInfo(tempEndVertex).PreviousVertex;
             }
 
-            return Path;
+            return new GraphPath(Path, GetVertexInfo(endVertex).EdgesWeightSum);
         }
     }
     /// <summary>
@@ -205,13 +191,7 @@ namespace GraphWinForms
         /// <summary>
         /// Converts vertex path to string path
         /// </summary>
-        public List<string> StringPath
-        { 
-            get
-            {
-                return Path.Select(vertex => vertex.Name).ToList();
-            }
-        }
+        public List<string> StringPath { get { return Path.Select(vertex => vertex.Name).ToList(); } }
         /// <summary>
         /// Path length
         /// </summary>
@@ -289,16 +269,16 @@ namespace GraphWinForms
         /// </summary>
         /// <param name="PathList">Path list</param>
         /// <param name="Order">Sort order</param>
-        public static void SortPathList(List<GraphPath> PathList, SortOrder Order = SortOrder.Ascending)
+        public static void SortPathList(List<GraphPath> PathList, SortType Order = SortType.Ascending)
         {
             switch (Order)
             {
-                case SortOrder.Ascending:
+                case SortType.Ascending:
                     {
                         PathList.Sort((x, y) => x.PathWeight - y.PathWeight);
                         break;
                     }
-                case SortOrder.Descending:
+                case SortType.Descending:
                     {
                         PathList.Sort((x, y) => y.PathWeight - x.PathWeight);
                         break;
@@ -306,10 +286,9 @@ namespace GraphWinForms
             }
         }
         /// <summary>
-        /// Find min 
+        /// Find min path with stated length
         /// </summary>
-        /// <param name="vertexName"></param>
-        /// <param name="pathLength"></param>
+        /// <param name="pathLength">Path length</param>
         /// <returns></returns>
         public List<GraphPath> FindMinPath(int pathLength)
         {
@@ -317,19 +296,16 @@ namespace GraphWinForms
             foreach (var vertex in Graph.Vertices)
             {
                 var PathList = Graph.FindAllVertexPaths(vertex.Name, pathLength);
-                SortPathList(PathList, SortOrder.Ascending);
+                SortPathList(PathList, SortType.Ascending);
                 if (PathList.Count > 0)
                 {
-                    foreach (var minVertexPath in PathList.FindAll(path => path.PathWeight == PathList[0].PathWeight))
-                    {
-                        MinPathsList.Add(minVertexPath);
-                    }
+                    MinPathsList.AddRange(PathList.FindAll(path => path.PathWeight == PathList[0].PathWeight));
                 }
             }
 
             if (MinPathsList.Count > 0)
             {
-                SortPathList(MinPathsList, SortOrder.Ascending);
+                SortPathList(MinPathsList, SortType.Ascending);
                 MinPathsList.RemoveAll(path => path.PathWeight != MinPathsList[0].PathWeight);
                 return MinPathsList;
             }

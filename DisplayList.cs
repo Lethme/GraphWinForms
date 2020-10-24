@@ -43,6 +43,20 @@ namespace GraphWinForms
         public static void SetDisplayHandler(ListBox display)
         {
             if (display != null) Display = display;
+            
+            Display.SelectedIndexChanged += (s, e) =>
+            {
+                if (SelectedIndex != -1)
+                {
+                    DrawGraph.HighlightPath
+                    (
+                        GetItem<GraphPath>().StringPath,
+                        DefaultSettings.PathColor,
+                        DefaultSettings.PathBeginColor,
+                        DefaultSettings.PathEndColor
+                    );
+                }
+            };
         }
         /// <summary>
         /// Allows to add any object to list
@@ -83,7 +97,7 @@ namespace GraphWinForms
             return default(T);
         }
         /// <summary>
-        /// Remove item at it's index position in list
+        /// Remove item at its index position in list
         /// </summary>
         /// <param name="itemIndex">Index of list item</param>
         public static void RemoveItem(int itemIndex)

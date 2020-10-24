@@ -89,7 +89,6 @@
             this.deikstraTool.Size = new System.Drawing.Size(60, 60);
             this.deikstraTool.TabIndex = 6;
             this.deikstraTool.UseVisualStyleBackColor = true;
-            this.deikstraTool.Click += new System.EventHandler(this.deikstraTool_Click);
             // 
             // edgeTool
             // 
@@ -101,7 +100,6 @@
             this.edgeTool.Size = new System.Drawing.Size(60, 60);
             this.edgeTool.TabIndex = 2;
             this.edgeTool.UseVisualStyleBackColor = true;
-            this.edgeTool.Click += new System.EventHandler(this.edgeTool_Click);
             // 
             // editTool
             // 
@@ -113,7 +111,6 @@
             this.editTool.Size = new System.Drawing.Size(60, 60);
             this.editTool.TabIndex = 5;
             this.editTool.UseVisualStyleBackColor = true;
-            this.editTool.Click += new System.EventHandler(this.editTool_Click);
             // 
             // deleteTool
             // 
@@ -125,7 +122,6 @@
             this.deleteTool.Size = new System.Drawing.Size(60, 60);
             this.deleteTool.TabIndex = 3;
             this.deleteTool.UseVisualStyleBackColor = true;
-            this.deleteTool.Click += new System.EventHandler(this.deleteTool_Click);
             // 
             // cursorTool
             // 
@@ -138,7 +134,6 @@
             this.cursorTool.Size = new System.Drawing.Size(60, 60);
             this.cursorTool.TabIndex = 0;
             this.cursorTool.UseVisualStyleBackColor = true;
-            this.cursorTool.Click += new System.EventHandler(this.cursorTool_Click);
             // 
             // vertexTool
             // 
@@ -150,7 +145,6 @@
             this.vertexTool.Size = new System.Drawing.Size(60, 60);
             this.vertexTool.TabIndex = 1;
             this.vertexTool.UseVisualStyleBackColor = true;
-            this.vertexTool.Click += new System.EventHandler(this.vertexTool_Click);
             // 
             // menuStrip1
             // 
@@ -253,19 +247,19 @@
             // findMinimalPathToolStripMenuItem
             // 
             this.findMinimalPathToolStripMenuItem.Name = "findMinimalPathToolStripMenuItem";
-            this.findMinimalPathToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.findMinimalPathToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
             this.findMinimalPathToolStripMenuItem.Text = "Find minimal path";
             this.findMinimalPathToolStripMenuItem.Click += new System.EventHandler(this.findMinimalPathToolStripMenuItem_Click);
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(168, 6);
             // 
             // clearToolStripMenuItem
             // 
             this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
-            this.clearToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.clearToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
             this.clearToolStripMenuItem.Text = "Clear";
             this.clearToolStripMenuItem.Click += new System.EventHandler(this.clearToolStripMenuItem_Click);
             // 
@@ -280,7 +274,7 @@
             // clearToolStripMenuItem1
             // 
             this.clearToolStripMenuItem1.Name = "clearToolStripMenuItem1";
-            this.clearToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.clearToolStripMenuItem1.Size = new System.Drawing.Size(101, 22);
             this.clearToolStripMenuItem1.Text = "Clear";
             this.clearToolStripMenuItem1.Click += new System.EventHandler(this.clearToolStripMenuItem1_Click);
             // 
@@ -318,11 +312,11 @@
             // listBox1
             // 
             this.listBox1.FormattingEnabled = true;
+            this.listBox1.HorizontalScrollbar = true;
             this.listBox1.Location = new System.Drawing.Point(987, 25);
             this.listBox1.Name = "listBox1";
             this.listBox1.Size = new System.Drawing.Size(195, 589);
             this.listBox1.TabIndex = 0;
-            this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
             // 
             // display
             // 
@@ -347,6 +341,7 @@
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.Text = "Graph Builder";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.panel2.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();

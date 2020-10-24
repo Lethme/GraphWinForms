@@ -9,136 +9,138 @@ using System.Windows.Forms.VisualStyles;
 namespace GraphWinForms
 {
     /// <summary>
-    /// Ориентация ребра графа
-    /// </summary>
-    public enum EdgeOrientation
-    {
-        Single,
-        Binary
-    }
-    /// <summary>
-    /// Ребро графа
+    /// Graph edge
     /// </summary>
     public class GraphEdge
     {
         /// <summary>
-        /// Связанная вершина
+        /// Vertex which current edge is connected to
         /// </summary>
         public GraphVertex ConnectedVertex { get; private set; }
         /// <summary>
-        /// Вес ребра
+        /// Edge weight
         /// </summary>
         public int EdgeWeight { get; private set; }
         /// <summary>
-        /// Конструктор
+        /// Edge length
         /// </summary>
-        /// <param name="connectedVertex">Связанная вершина</param>
-        /// <param name="weight">Вес ребра</param>
-        public GraphEdge(GraphVertex connectedVertex, int weight)
+        public int EdgeLength { get; private set; }
+        /// <summary>
+        /// Edge constructor
+        /// </summary>
+        /// <param name="connectedVertex">Vertex which new edge will be connected to</param>
+        /// <param name="weight">Edge weight</param>
+        public GraphEdge(GraphVertex connectedVertex, int weight, int length = 0)
         {
             ConnectedVertex = connectedVertex;
             EdgeWeight = weight;
+            EdgeLength = length;
         }
         /// <summary>
-        /// Изменить смежную вершину
+        /// Change connected vertex
         /// </summary>
-        /// <param name="vertex">Смежная вершина</param>
+        /// <param name="vertex">New vertex</param>
         public void SetVertex(GraphVertex vertex)
         {
             if (vertex != null) ConnectedVertex = vertex;
         }
         /// <summary>
-        /// Изменить вес ребра
+        /// Change edge weight
         /// </summary>
-        /// <param name="weight">Вес ребра</param>
+        /// <param name="weight">New edge weight</param>
         public void SetWeight(int weight)
         {
             if (weight > 0) EdgeWeight = weight;
         }
+        /// <summary>
+        /// Change edge length
+        /// </summary>
+        /// <param name="length">New edge length</param>
+        public void SetLength(int length)
+        {
+            if (length > 0) EdgeWeight = length;
+        }
     }
     /// <summary>
-    /// Вершина графа
+    /// Graph vertex
     /// </summary>
     public class GraphVertex
     {
         /// <summary>
-        /// Название вершины
+        /// Vertex name
         /// </summary>
         public string Name { get; private set; }
         /// <summary>
-        /// Список ребер
+        /// List of vertex edges
         /// </summary>
         public List<GraphEdge> Edges { get; }
         /// <summary>
-        /// List of vertices connected to current vertex
+        /// List of vertices which are near to current vertex
         /// </summary>
-        public List<GraphVertex> ConnectedVertices 
-        { 
-            get
-            {
-                var List = new List<GraphVertex>();
-                foreach (var edge in Edges)
-                {
-                    List.Add(edge.ConnectedVertex);
-                }
-                return List;
-            }
-        }
+        public List<GraphVertex> ConnectedVertices { get { return Edges.Select(edge => edge.ConnectedVertex).ToList(); } }
         /// <summary>
-        /// Конструктор
+        /// Vertex constructor
         /// </summary>
-        /// <param name="vertexName">Название вершины</param>
+        /// <param name="vertexName">Vertex name</param>
         public GraphVertex(string vertexName)
         {
             Name = vertexName;
             Edges = new List<GraphEdge>();
         }
         /// <summary>
-        /// Добавить ребро
+        /// Add new edge
         /// </summary>
-        /// <param name="newEdge">Ребро</param>
+        /// <param name="newEdge">New edge</param>
         public void AddEdge(GraphEdge newEdge)
         {
             Edges.Add(newEdge);
         }
         /// <summary>
-        /// Добавить ребро
+        /// Add new edge
         /// </summary>
-        /// <param name="vertex">Вершина</param>
-        /// <param name="edgeWeight">Вес</param>
+        /// <param name="vertex">Vertex which new edge will be connected to</param>
+        /// <param name="edgeWeight">Edge weight</param>
         public void AddEdge(GraphVertex vertex, int edgeWeight)
         {
             AddEdge(new GraphEdge(vertex, edgeWeight));
         }
         /// <summary>
-        /// Удалить ребро
+        /// Remove edge
         /// </summary>
-        /// <param name="edge">Ребро графа</param>
+        /// <param name="edge">Edge</param>
         public void RemoveEdge(GraphEdge edge)
         {
             Edges.Remove(edge);
         }
         /// <summary>
-        /// Изменение имени вершины
+        /// Remove edge
         /// </summary>
-        /// <param name="name">Имя вершины</param>
-        public void SetName(string name)
+        /// <param name="connectedVertexName">Name of vertex which edge to be removed is connected to</param>
+        public void RemoveEdge(string connectedVertexName)
         {
-            if (name != null && name != string.Empty) Name = name;
+            Edges.RemoveAll(edge => edge.ConnectedVertex.Name == connectedVertexName);
         }
         /// <summary>
-        /// Преобразование в строку
+        /// Change vertex name
         /// </summary>
-        /// <returns>Имя вершины</returns>
+        /// <param name="name">New vertex name</param>
+        public void SetName(string name)
+        {
+            if (name != null && name != String.Empty) Name = name;
+        }
+        /// <summary>
+        /// Vertex to string converter
+        /// </summary>
+        /// <returns>Vertex name</returns>
         public override string ToString() => Name;
     }
     /// <summary>
-    /// Граф
+    /// Graph
     /// </summary>
     public class Graph
     {
         /// <summary>
-        /// Список вершин графа
+        /// List of graph vertices
         /// </summary>
         public List<GraphVertex> Vertices { get; }
         /// <summary>
@@ -146,7 +148,7 @@ namespace GraphWinForms
         /// </summary>
         public bool IsEmpty => Vertices.Count == 0;
         /// <summary>
-        /// Конструктор
+        /// Graph constructor
         /// </summary>
         public Graph()
         {
@@ -155,28 +157,45 @@ namespace GraphWinForms
         /// <summary>
         /// Sort graph
         /// </summary>
-        public void Sort()
+        /// <param name="sortType">Sort type</param>
+        public void Sort(SortType sortType = SortType.Ascending)
         {
-            Vertices.Sort((x, y) => x.Name.CompareTo(y.Name));
-            foreach (var vertex in Vertices)
+            switch (sortType)
             {
-                vertex.Edges.Sort((x, y) => x.ConnectedVertex.Name.CompareTo(y.ConnectedVertex.Name));
+                case SortType.Ascending:
+                    {
+                        Vertices.Sort((x, y) => x.Name.CompareTo(y.Name));
+                        foreach (var vertex in Vertices)
+                        {
+                            vertex.Edges.Sort((x, y) => x.ConnectedVertex.Name.CompareTo(y.ConnectedVertex.Name));
+                        }
+                        break;
+                    }
+                case SortType.Descending:
+                    {
+                        Vertices.Sort((x, y) => y.Name.CompareTo(x.Name));
+                        foreach (var vertex in Vertices)
+                        {
+                            vertex.Edges.Sort((x, y) => y.ConnectedVertex.Name.CompareTo(x.ConnectedVertex.Name));
+                        }
+                        break;
+                    }
             }
         }
         /// <summary>
-        /// Добавление вершины
+        /// Add new vertex
         /// </summary>
-        /// <param name="vertexName">Имя вершины</param>
+        /// <param name="vertexName">New vertex name</param>
         public void AddVertex(string vertexName)
         {
             Vertices.Add(new GraphVertex(vertexName));
-            Sort();
+            Sort(SortType.Ascending);
         }
         /// <summary>
-        /// Поиск вершины
+        /// Get vertex by its name
         /// </summary>
-        /// <param name="vertexName">Название вершины</param>
-        /// <returns>Найденная вершина</returns>
+        /// <param name="vertexName">Vertex name</param>
+        /// <returns>Vertex or null reference if there is no vertex with the same name in the graph</returns>
         public GraphVertex FindVertex(string vertexName)
         {
             foreach (var v in Vertices)
@@ -190,12 +209,12 @@ namespace GraphWinForms
             return null;
         }
         /// <summary>
-        /// Поиск рёбер между двумя вершинами
+        /// Find edge between two vertices
         /// </summary>
-        /// <param name="firstVertexName">Имя первой вершины</param>
-        /// <param name="secondVertexName">Имя второй вершины</param>
-        /// <param name="firstEdge">Ребро первой вершины</param>
-        /// <param name="secondEdge">Ребро второй вершины</param>
+        /// <param name="firstVertexName">First vertex name</param>
+        /// <param name="secondVertexName">Second vertex name</param>
+        /// <param name="firstEdge">Edge from the first vertex edge list</param>
+        /// <param name="secondEdge">Edge from the second vertex edge list</param>
         private void FindEdge(string firstVertexName, string secondVertexName, out GraphEdge firstEdge, out GraphEdge secondEdge)
         {
             firstEdge = null;
@@ -238,11 +257,12 @@ namespace GraphWinForms
             return 0;
         }
         /// <summary>
-        /// Добавление ребра
+        /// Add new edge
         /// </summary>
-        /// <param name="firstVertexName">Имя первой вершины</param>
-        /// <param name="secondVertexName">Имя второй вершины</param>
-        /// <param name="weight">Вес ребра соединяющего вершины</param>
+        /// <param name="firstVertexName">First vertex name</param>
+        /// <param name="secondVertexName">Second vertex name</param>
+        /// <param name="weight">Edge weight</param>
+        /// <param name="orientation">Edge orientation</param>
         public void AddEdge(string firstVertexName, string secondVertexName, int weight, EdgeOrientation orientation = EdgeOrientation.Binary)
         {
             var FirstVertex = FindVertex(firstVertexName);
@@ -263,14 +283,14 @@ namespace GraphWinForms
                             break;
                         }
                 }
-                Sort();
+                Sort(SortType.Ascending);
             }
         }
         /// <summary>
-        /// Изменение имени вершины
+        /// Edit vertex name
         /// </summary>
-        /// <param name="currentName">Текущее имя вершины</param>
-        /// <param name="newName">Новое имя вершины</param>
+        /// <param name="currentName">Current vertex name</param>
+        /// <param name="newName">New vertex name</param>
         public void EditVertex(string currentName, string newName)
         {
             var vert = FindVertex(currentName);
@@ -285,7 +305,7 @@ namespace GraphWinForms
             if (vert != null)
             {
                 vert.SetName(newName);
-                Sort();
+                Sort(SortType.Ascending);
             }
         }
         /// <summary>
@@ -303,10 +323,10 @@ namespace GraphWinForms
             Sort();
         }
         /// <summary>
-        /// Удаление ребра графа
+        /// Remove edge
         /// </summary>
-        /// <param name="firstVertexName">Имя первой вершины</param>
-        /// <param name="secondVertexName">Имя второй вершины</param>
+        /// <param name="firstVertexName">First vertex name</param>
+        /// <param name="secondVertexName">Second vertex name</param>
         public void RemoveEdge(string firstVertexName, string secondVertexName)
         {
             var FirstVertex = FindVertex(firstVertexName);
@@ -318,13 +338,13 @@ namespace GraphWinForms
             {
                 if (FirstEdge != null) FirstVertex.RemoveEdge(FirstEdge);
                 if (SecondEdge != null) SecondVertex.RemoveEdge(SecondEdge);
-                Sort();
+                Sort(SortType.Ascending);
             }
         }
         /// <summary>
-        /// Удаление вершины графа
+        /// Remove vertex
         /// </summary>
-        /// <param name="vertexName">Имя удаляемой вершины</param>
+        /// <param name="vertexName">Vertex name</param>
         public void RemoveVertex(string vertexName)
         {
             var vertex = FindVertex(vertexName);
@@ -333,10 +353,10 @@ namespace GraphWinForms
                 RemoveEdge(vertex.Name, vertex.Edges[0].ConnectedVertex.Name);
             }
             Vertices.Remove(vertex);
-            Sort();
+            Sort(SortType.Ascending);
         }
         /// <summary>
-        /// Удаление всего графа
+        /// Remove graph
         /// </summary>
         public void Clear()
         {
@@ -346,11 +366,11 @@ namespace GraphWinForms
             }
         }
         /// <summary>
-        /// Кратчайший путь по алгоритму Дейкстры
+        /// Deikstra algorithm's shortest path
         /// </summary>
-        /// <param name="firstVertexName">Имя начальной вершины</param>
-        /// <param name="secondVertexName">Имя конечной вершины</param>
-        /// <returns>Объект, хранящий кратчайший путь и его вес</returns>
+        /// <param name="firstVertexName">First vertex name</param>
+        /// <param name="secondVertexName">Second vertex name</param>
+        /// <returns>Shortest path</returns>
         public GraphPath FindShortestPath(string firstVertexName, string secondVertexName)
         {
             var deikstra = new Deikstra(this);
@@ -363,16 +383,12 @@ namespace GraphWinForms
         /// <returns>List of connected vertices</returns>
         public List<GraphVertex> GetConnectedVertices(string vertexName)
         {
-            var List = new List<GraphVertex>();
             var vertex = FindVertex(vertexName);
             if (vertex != null)
             {
-                foreach (var edge in vertex.Edges)
-                {
-                    List.Add(edge.ConnectedVertex);
-                }
+                return vertex.ConnectedVertices;
             }
-            return List;
+            return null;
         }
         /// <summary>
         /// Find all possible paths with stated length from stated vertex

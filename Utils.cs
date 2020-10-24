@@ -73,7 +73,7 @@ namespace GraphWinForms
                 else
                     MessageBox.Show
                     (
-                        "Application has to be run with administrator rights to associate it's file extension with itself.",
+                        "Application has to be run with administrator rights to associate its file extension with itself.",
                         "Information",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information,
@@ -95,7 +95,7 @@ namespace GraphWinForms
                 {
                     MessageBox.Show
                     (
-                        "Application has to be run with administrator rights to associate it's file extension with itself.",
+                        "Application has to be run with administrator rights to associate its file extension with itself.",
                         "Information",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information,
