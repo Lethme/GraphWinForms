@@ -58,7 +58,7 @@ namespace GraphWinForms
         /// <param name="length">New edge length</param>
         public void SetLength(int length)
         {
-            if (length > 0) EdgeWeight = length;
+            if (length > 0) EdgeLength = length;
         }
     }
     /// <summary>
@@ -373,18 +373,20 @@ namespace GraphWinForms
         /// </summary>
         /// <param name="firstVertexName">First vertex name</param>
         /// <param name="secondVertexName">Second vertex name</param>
+        /// <param name="searchingField">Field of edge to search the shortest path by</param>
         /// <returns>Shortest path</returns>
-        public GraphPath FindShortestPath(string firstVertexName, string secondVertexName)
+        public GraphPath FindShortestPath(string firstVertexName, string secondVertexName, PathSearchingField searchingField = PathSearchingField.Weight)
         {
             var deikstra = new Deikstra(this);
-            return deikstra.FindShortestPath(firstVertexName, secondVertexName);
+            return deikstra.FindShortestPath(firstVertexName, secondVertexName, searchingField);
         }
         /// <summary>
         /// Find all the shortest paths from stated vertex to every other one
         /// </summary>
         /// <param name="vertexName">Vertex name</param>
+        /// <param name="searchingField">Field of edge to search the shortest path by</param>
         /// <returns>List of shortest paths</returns>
-        public List<GraphPath> FindAllShortestPaths(string vertexName)
+        public List<GraphPath> FindAllShortestPaths(string vertexName, PathSearchingField searchingField = PathSearchingField.Weight)
         {
             var vertex = FindVertex(vertexName);
             var shortestPaths = new List<GraphPath>();
@@ -393,7 +395,7 @@ namespace GraphWinForms
                 var deikstra = new Deikstra(this);
                 foreach (var v in Vertices)
                 {
-                    if (v != vertex) shortestPaths.Add(deikstra.FindShortestPath(vertex, v));
+                    if (v != vertex) shortestPaths.Add(deikstra.FindShortestPath(vertex, v, searchingField));
                 }
             }
             return shortestPaths;

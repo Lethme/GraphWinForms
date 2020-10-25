@@ -114,18 +114,20 @@ namespace GraphWinForms
         /// </summary>
         /// <param name="firstVertexName">First vertex name</param>
         /// <param name="secondVertexName">Second vertex name</param>
+        /// <param name="searchingField">Field of edge to search the shortest path by</param>
         /// <returns>Shortest path</returns>
-        public GraphPath FindShortestPath(string firstVertexName, string secondVertexName)
+        public GraphPath FindShortestPath(string firstVertexName, string secondVertexName, PathSearchingField searchingField = PathSearchingField.Weight)
         {
-            return FindShortestPath(Graph.FindVertex(firstVertexName), Graph.FindVertex(secondVertexName));
+            return FindShortestPath(Graph.FindVertex(firstVertexName), Graph.FindVertex(secondVertexName), searchingField);
         }
         /// <summary>
         /// Search a shortest path between two vertices
         /// </summary>
         /// <param name="firstVertex">First vertex</param>
         /// <param name="secondVertex">Second vertex</param>
+        /// <param name="searchingField">Field of edge to search the shortest path by</param>
         /// <returns>Кратчайший путь</returns>
-        public GraphPath FindShortestPath(GraphVertex firstVertex, GraphVertex secondVertex)
+        public GraphPath FindShortestPath(GraphVertex firstVertex, GraphVertex secondVertex, PathSearchingField searchingField = PathSearchingField.Weight)
         {
             InitInfo();
             var first = GetVertexInfo(firstVertex);
@@ -138,7 +140,7 @@ namespace GraphWinForms
                     break;
                 }
 
-                SetSumToNextVertex(current);
+                SetSumToNextVertex(current, searchingField);
             }
 
             return GetPath(secondVertex);
@@ -147,13 +149,19 @@ namespace GraphWinForms
         /// Calculate edge weight sum for the next vertex
         /// </summary>
         /// <param name="info">Current vertex info</param>
-        private void SetSumToNextVertex(GraphVertexInfo info)
+        /// <param name="searchingField">Field of edge to search the shortest path by</param>
+        private void SetSumToNextVertex(GraphVertexInfo info, PathSearchingField searchingField = PathSearchingField.Weight)
         {
             info.IsUnvisited = false;
             foreach (var e in info.Vertex.Edges)
             {
                 var nextInfo = GetVertexInfo(e.ConnectedVertex);
-                var sum = info.EdgesWeightSum + e.EdgeWeight;
+                var sum = info.EdgesWeightSum;
+                switch (searchingField)
+                {
+                    case PathSearchingField.Weight: { sum += e.EdgeWeight; break; }
+                    case PathSearchingField.Length: { sum += e.EdgeLength; break; }
+                }
                 if (sum < nextInfo.EdgesWeightSum)
                 {
                     nextInfo.EdgesWeightSum = sum;

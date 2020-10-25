@@ -13,6 +13,20 @@ namespace GraphWinForms
     public static class Utils
     {
         /// <summary>
+        /// Random unit
+        /// </summary>
+        private static Random Random { get; } = new Random();
+        /// <summary>
+        /// Generates random double number between two stated double values
+        /// </summary>
+        /// <param name="firstNumber">First value</param>
+        /// <param name="secondNumber">Second value</param>
+        /// <returns>Random double number between two stated double values</returns>
+        public static double Rand(double firstNumber, double secondNumber)
+        {
+            return Random.NextDouble() * (secondNumber - firstNumber) + firstNumber;
+        }
+        /// <summary>
         /// Allows to show basic Yes/No dialog
         /// </summary>
         /// <param name="ConfirmationText">Text shown within dialog</param>

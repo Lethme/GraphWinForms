@@ -96,4 +96,18 @@ namespace GraphWinForms
         /// </summary>
         Silent
     }
+    /// <summary>
+    /// Shortest path searching field of graph edge
+    /// </summary>
+    public enum PathSearchingField
+    {
+        /// <summary>
+        /// Edge weight
+        /// </summary>
+        Weight,
+        /// <summary>
+        /// Edge length
+        /// </summary>
+        Length
+    }
 }

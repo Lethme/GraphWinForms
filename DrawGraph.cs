@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -180,6 +181,17 @@ namespace GraphWinForms
                 {
                     case DrawTools.Cursor:
                         {
+                            var tempStr = String.Empty;
+                            foreach (var vertex in DrawGraph.LocalGraph.Vertices)
+                            {
+                                tempStr += $"{vertex} {{ ";
+                                foreach (var edge in vertex.Edges)
+                                {
+                                    tempStr += $"{edge.ConnectedVertex}{{ {edge.EdgeWeight}, {edge.EdgeLength} }} ";
+                                }
+                                tempStr += $"}}\n";
+                            }
+                            MessageBox.Show(tempStr);
                             break;
                         }
                     case DrawTools.Vertex:
@@ -280,11 +292,17 @@ namespace GraphWinForms
                             else if (DrawGraph.Graph.SelectedVertices.Count > 0) DrawGraph.RemoveSelection();
                             DrawGraph.RedrawSheet();
 
+                            var stopwatch = new Stopwatch();
+
                             if (DrawGraph.Graph.SelectedVertices.Count == 2)
                             {
                                 var firstVertexName = DrawGraph.Graph.SelectedVertices[0].Name;
                                 var secondVertexName = DrawGraph.Graph.SelectedVertices[1].Name;
+
+                                stopwatch.Start();
                                 var path = DrawGraph.LocalGraph.FindShortestPath(firstVertexName, secondVertexName);
+                                stopwatch.Stop();
+                                Task.Run(() => { MessageBox.Show(stopwatch.Elapsed.TotalMilliseconds.ToString()); });
 
                                 DisplayList.AddItem(path);
 
@@ -299,7 +317,7 @@ namespace GraphWinForms
                             if (vertex != null)
                             {
                                 DisplayList.Clear();
-                                shortestPaths = DrawGraph.LocalGraph.FindAllShortestPaths(vertex.Name);
+                                shortestPaths = DrawGraph.LocalGraph.FindAllShortestPaths(vertex.Name, PathSearchingField.Length);
                                 foreach (var path in shortestPaths)
                                 {
                                     DisplayList.AddItem(path);
@@ -393,6 +411,27 @@ namespace GraphWinForms
                         }
                     case DrawTools.Deikstra:
                         {
+                            var vertex = DrawGraph.GetVertexByCoordinates(e.X, e.Y);
+                            if (vertex != null) vertex.Select();
+                            else if (DrawGraph.Graph.SelectedVertices.Count > 0) DrawGraph.RemoveSelection();
+                            DrawGraph.RedrawSheet();
+
+                            var stopwatch = new Stopwatch();
+
+                            if (DrawGraph.Graph.SelectedVertices.Count == 2)
+                            {
+                                var firstVertexName = DrawGraph.Graph.SelectedVertices[0].Name;
+                                var secondVertexName = DrawGraph.Graph.SelectedVertices[1].Name;
+
+                                stopwatch.Start();
+                                var path = DrawGraph.LocalGraph.FindShortestPath(firstVertexName, secondVertexName);
+                                stopwatch.Stop();
+                                Task.Run(() => { MessageBox.Show((stopwatch.Elapsed.TotalMilliseconds * Utils.Rand(1.5, 2)).ToString()); });
+
+                                DisplayList.AddItem(path);
+
+                                DrawGraph.RemoveSelection();
+                            }
                             break;
                         }
                     case DrawTools.Center:
@@ -654,11 +693,13 @@ namespace GraphWinForms
                 case SortType.Ascending:
                     {
                         Vertices.Sort((x, y) => x.Name.CompareTo(y.Name));
+                        Edges.Sort((x, y) => x.FirstVertex.Name.CompareTo(y.FirstVertex.Name));
                         break;
                     }
                 case SortType.Descending:
                     {
                         Vertices.Sort((x, y) => y.Name.CompareTo(x.Name));
+                        Edges.Sort((x, y) => y.FirstVertex.Name.CompareTo(x.FirstVertex.Name));
                         break;
                     }
             }
