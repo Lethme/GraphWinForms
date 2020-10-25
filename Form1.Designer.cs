@@ -73,7 +73,7 @@
             this.panel2.Controls.Add(this.deleteTool);
             this.panel2.Controls.Add(this.cursorTool);
             this.panel2.Controls.Add(this.vertexTool);
-            this.panel2.Location = new System.Drawing.Point(12, 550);
+            this.panel2.Location = new System.Drawing.Point(12, 552);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(964, 64);
             this.panel2.TabIndex = 1;
@@ -251,18 +251,18 @@
             // findMinimalPathToolStripMenuItem
             // 
             this.findMinimalPathToolStripMenuItem.Name = "findMinimalPathToolStripMenuItem";
-            this.findMinimalPathToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.findMinimalPathToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
             this.findMinimalPathToolStripMenuItem.Text = "Find minimal path";
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(168, 6);
             // 
             // clearToolStripMenuItem
             // 
             this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
-            this.clearToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.clearToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
             this.clearToolStripMenuItem.Text = "Clear";
             // 
             // listToolStripMenuItem1
@@ -276,7 +276,7 @@
             // clearToolStripMenuItem1
             // 
             this.clearToolStripMenuItem1.Name = "clearToolStripMenuItem1";
-            this.clearToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.clearToolStripMenuItem1.Size = new System.Drawing.Size(101, 22);
             this.clearToolStripMenuItem1.Text = "Clear";
             // 
             // aboutToolStripMenuItem
@@ -297,14 +297,14 @@
             // 
             this.listBox1.FormattingEnabled = true;
             this.listBox1.HorizontalScrollbar = true;
-            this.listBox1.Location = new System.Drawing.Point(987, 25);
+            this.listBox1.Location = new System.Drawing.Point(987, 27);
             this.listBox1.Name = "listBox1";
             this.listBox1.Size = new System.Drawing.Size(195, 589);
             this.listBox1.TabIndex = 0;
             // 
             // display
             // 
-            this.display.Location = new System.Drawing.Point(12, 25);
+            this.display.Location = new System.Drawing.Point(12, 27);
             this.display.Name = "display";
             this.display.Size = new System.Drawing.Size(964, 519);
             this.display.TabIndex = 0;
@@ -315,10 +315,10 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1194, 626);
-            this.Controls.Add(this.listBox1);
             this.Controls.Add(this.display);
-            this.Controls.Add(this.panel2);
+            this.Controls.Add(this.listBox1);
             this.Controls.Add(this.menuStrip1);
+            this.Controls.Add(this.panel2);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MainMenuStrip = this.menuStrip1;
             this.MaximizeBox = false;

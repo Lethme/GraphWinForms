@@ -80,20 +80,22 @@ namespace GraphWinForms
         /// </summary>
         public static void AssociateExtension()
         {
+            if (!IsAdministrator())
+            {
+                MessageBox.Show
+                (
+                    "Application has to be run with administrator rights to associate its file extension with itself.",
+                    "Information",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information,
+                    MessageBoxDefaultButton.Button1,
+                    MessageBoxOptions.DefaultDesktopOnly
+                );
+                return;
+            }
             if (!FileAssociation.IsAssociated)
             {
-                if (IsAdministrator())
-                    FileAssociation.Associate("Graph Builder File", Application.ExecutablePath);
-                else
-                    MessageBox.Show
-                    (
-                        "Application has to be run with administrator rights to associate its file extension with itself.",
-                        "Information",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information,
-                        MessageBoxDefaultButton.Button1,
-                        MessageBoxOptions.DefaultDesktopOnly
-                    );
+                FileAssociation.Associate("Graph Builder File", Application.ExecutablePath);
             }
         }
         /// <summary>
@@ -101,22 +103,22 @@ namespace GraphWinForms
         /// </summary>
         public static void UnAssociateExtension()
         {
+            if (!IsAdministrator())
+            {
+                MessageBox.Show
+                (
+                    "Application has to be run with administrator rights to associate its file extension with itself.",
+                    "Information",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information,
+                    MessageBoxDefaultButton.Button1,
+                    MessageBoxOptions.DefaultDesktopOnly
+                );
+                return;
+            }
             if (FileAssociation.IsAssociated)
             {
-                if (IsAdministrator())
-                    FileAssociation.Remove();
-                else
-                {
-                    MessageBox.Show
-                    (
-                        "Application has to be run with administrator rights to associate its file extension with itself.",
-                        "Information",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information,
-                        MessageBoxDefaultButton.Button1,
-                        MessageBoxOptions.DefaultDesktopOnly
-                    );
-                }
+                FileAssociation.Remove();
             }
         }
         /// <summary>

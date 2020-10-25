@@ -79,7 +79,7 @@ namespace GraphWinForms
             formHandler.saveAsImageFileToolStripMenuItem.Click += (s, e) => { DrawGraph.SaveGraphAsImage(); };
             formHandler.saveAsGWFFileToolStripMenuItem.Click += (s, e) => { DrawGraph.SaveGraphAsGWFFile(); };
             formHandler.openToolStripMenuItem.Click += (s, e) => { DrawGraph.LoadGraphFromGWFFile(); };
-            formHandler.aboutToolStripMenuItem.Click += (s, e) => { using (var AboutForm = new About()) { AboutForm.ShowDialog(); } };
+            formHandler.aboutToolStripMenuItem1.Click += (s, e) => { using (var AboutForm = new About()) { AboutForm.ShowDialog(); } };
             formHandler.exitToolStripMenuItem.Click += (s, e) => { if (Utils.Confirmation("You really want to exit?", "Exit")) { Application.Exit(); } };
             formHandler.associateFileTypeToolStripMenuItem.Click += (s, e) => { Utils.AssociateExtension(); };
             formHandler.unassociateFileTypeToolStripMenuItem.Click += (s, e) => { Utils.UnAssociateExtension(); };
@@ -125,6 +125,46 @@ namespace GraphWinForms
                 {
                     DisplayList.Clear();
                     DrawGraph.UnHighlightPath();
+                }
+            };
+
+            ((Control)formHandler.display).AllowDrop = true;
+            formHandler.display.DragEnter += (s, e) =>
+            {
+                if (e.Data.GetDataPresent(DataFormats.FileDrop))
+                {
+                    e.Effect = DragDropEffects.Copy;
+                }
+            };
+            formHandler.display.DragDrop += (s, e) =>
+            {
+                var fileList = (string[])e.Data.GetData(DataFormats.FileDrop);
+                if (fileList.Length == 1)
+                {
+                    if (fileList[0].EndsWith(".gwf"))
+                    {
+                        DrawGraph.LoadGraphFromGWFFile(fileList[0], LoadType.Normal);
+                    }
+                    else
+                    {
+                        MessageBox.Show
+                        (
+                            "You can only open *.gwf files",
+                            "Error",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error
+                        );
+                    }
+                }
+                else
+                {
+                    MessageBox.Show
+                        (
+                            "You can only put one file",
+                            "Error",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error
+                        );
                 }
             };
 

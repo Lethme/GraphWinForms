@@ -19,7 +19,7 @@ namespace GraphWinForms
             InitializeComponent();
             
             this.Icon = Icon.FromHandle(Properties.Resources.graph_icon.GetHicon());
-            
+
             DrawGraph.CreateGraphics(display);
             DrawTool.SetFormHandler(this, args);
         }
