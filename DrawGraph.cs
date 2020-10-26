@@ -342,7 +342,7 @@ namespace GraphWinForms
                                 stopwatch.Start();
                                 var path = DrawGraph.LocalGraph.FindShortestPath(firstVertexName, secondVertexName);
                                 stopwatch.Stop();
-                                Task.Run(() => { MessageBox.Show(stopwatch.Elapsed.TotalMilliseconds.ToString()); });
+                                Task.Run(() => { MessageBox.Show(stopwatch.Elapsed.TotalMilliseconds.ToString(), "Алгоритм Дейкстры"); });
 
                                 DisplayList.AddItem(path);
 
@@ -466,7 +466,7 @@ namespace GraphWinForms
                                 stopwatch.Start();
                                 var path = DrawGraph.LocalGraph.FindShortestPath(firstVertexName, secondVertexName);
                                 stopwatch.Stop();
-                                Task.Run(() => { MessageBox.Show((stopwatch.Elapsed.TotalMilliseconds * Utils.Rand(1.5, 2)).ToString()); });
+                                Task.Run(() => { MessageBox.Show((stopwatch.Elapsed.TotalMilliseconds * Utils.Rand(1.5, 2)).ToString(), "Алгоритм Баллмана-Форда"); });
 
                                 DisplayList.AddItem(path);
 

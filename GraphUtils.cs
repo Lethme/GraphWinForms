@@ -135,11 +135,7 @@ namespace GraphWinForms
             while (true)
             {
                 var current = FindUnvisitedVertexWithMinSum();
-                if (current == null)
-                {
-                    break;
-                }
-
+                if (current == null) break;
                 SetSumToNextVertex(current, searchingField);
             }
 
@@ -199,7 +195,7 @@ namespace GraphWinForms
         /// <summary>
         /// Converts vertex path to string path
         /// </summary>
-        public List<string> StringPath { get { return Path.Select(vertex => vertex.Name).ToList(); } }
+        public List<string> StringPath => Path.Select(vertex => vertex.Name).ToList();
         /// <summary>
         /// Path length
         /// </summary>
@@ -305,7 +301,7 @@ namespace GraphWinForms
                 return MinPathsList;
             }
 
-            return null;
+            return new List<GraphPath>();
         }
         /// <summary>
         /// Find all possible paths with stated length from stated vertex

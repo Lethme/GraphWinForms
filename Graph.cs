@@ -77,7 +77,7 @@ namespace GraphWinForms
         /// <summary>
         /// List of vertices which are near to current vertex
         /// </summary>
-        public List<GraphVertex> ConnectedVertices { get { return Edges.Select(edge => edge.ConnectedVertex).ToList(); } }
+        public List<GraphVertex> ConnectedVertices => Edges.Select(edge => edge.ConnectedVertex).ToList();
         /// <summary>
         /// Vertex constructor
         /// </summary>
@@ -398,6 +398,7 @@ namespace GraphWinForms
                     if (v != vertex) shortestPaths.Add(deikstra.FindShortestPath(vertex, v, searchingField));
                 }
             }
+            shortestPaths.Sort((x, y) => x.PathWeight.CompareTo(y.PathWeight));
             return shortestPaths;
         }
         /// <summary>
@@ -432,12 +433,12 @@ namespace GraphWinForms
         /// Finds list of paths with minimal weight and stated length
         /// </summary>
         /// <param name="pathLength">Path length</param>
-        /// <returns>list of paths with minimal weight and stated length</returns>
+        /// <returns>List of paths with minimal weight and stated length</returns>
         public List<GraphPath> FindMinPath(int pathLength)
         {
             var Path = new Path(this);
             var PathList = Path.FindMinPath(pathLength);
-            if (PathList != null && PathList.Count > 1) PathList.Sort((x, y) => x.Path[0].Name.CompareTo(y.Path[0].Name));
+            if (PathList.Count > 1) PathList.Sort((x, y) => x.Path[0].Name.CompareTo(y.Path[0].Name));
             return PathList;
         }
     }
