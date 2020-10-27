@@ -296,6 +296,7 @@ namespace GraphWinForms
                             var vertex = DrawGraph.GetVertexByCoordinates(e.X, e.Y);
                             if (vertex != null)
                             {
+                                vertex.Select();
                                 var Line = Utils.ShowInputDialog
                                 (
                                     "Change vertex name",
@@ -308,6 +309,7 @@ namespace GraphWinForms
                                     DisplayList.Clear();
                                     DrawGraph.RedrawSheet();
                                 }
+                                vertex.Unselect();
                             }
                             break;
                         }
