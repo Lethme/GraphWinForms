@@ -221,6 +221,17 @@ namespace GraphWinForms
                 {
                     case DrawTools.Cursor:
                         {
+                            var tempStr = String.Empty;
+                            foreach (var vertex in DrawGraph.LocalGraph.Vertices)
+                            {
+                                tempStr += $"{vertex} {{ ";
+                                foreach (var edge in vertex.Edges)
+                                {
+                                    tempStr += $"{edge.ConnectedVertex}{{ {edge.EdgeWeight}, {edge.EdgeLength} }} ";
+                                }
+                                tempStr += $"}}\n";
+                            }
+                            MessageBox.Show(tempStr);
                             break;
                         }
                     case DrawTools.Vertex:
@@ -752,7 +763,7 @@ namespace GraphWinForms
         /// <summary>
         /// Bitmap for drawing
         /// </summary>
-        private static Bitmap GraphBitmap { get; set; }
+        public static Bitmap GraphBitmap { get; private set; }
         /// <summary>
         /// Graphic graph data object
         /// </summary>
