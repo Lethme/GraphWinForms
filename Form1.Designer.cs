@@ -326,7 +326,10 @@
             this.Controls.Add(this.listBox1);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.panel2);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MainMenuStrip = this.menuStrip1;
+            this.MaximizeBox = false;
+            this.MaximumSize = new System.Drawing.Size(1210, 665);
             this.MinimumSize = new System.Drawing.Size(1210, 665);
             this.Name = "Form1";
             this.Text = "Graph Builder";
