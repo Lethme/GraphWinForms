@@ -151,10 +151,7 @@ namespace GraphWinForms
         /// <summary>
         /// Graph constructor
         /// </summary>
-        public Graph()
-        {
-            Vertices = new List<GraphVertex>();
-        }
+        public Graph() => Vertices = new List<GraphVertex>();
         /// <summary>
         /// Sort graph
         /// </summary>
@@ -214,12 +211,10 @@ namespace GraphWinForms
         /// </summary>
         /// <param name="firstVertexName">First vertex name</param>
         /// <param name="secondVertexName">Second vertex name</param>
-        /// <param name="firstEdge">Edge from the first vertex edge list</param>
-        /// <param name="secondEdge">Edge from the second vertex edge list</param>
-        private void FindEdge(string firstVertexName, string secondVertexName, out GraphEdge firstEdge, out GraphEdge secondEdge)
+        private (GraphEdge FirstEdge, GraphEdge SecondEdge) FindEdge(string firstVertexName, string secondVertexName)
         {
-            firstEdge = null;
-            secondEdge = null;
+            GraphEdge firstEdge = null;
+            GraphEdge secondEdge = null;
 
             var firstVertex = FindVertex(firstVertexName);
             var secondVertex = FindVertex(secondVertexName);
@@ -242,6 +237,8 @@ namespace GraphWinForms
                 firstEdge = secondEdge;
                 secondEdge = tempEdge;
             }
+
+            return (firstEdge, secondEdge);
         }
         /// <summary>
         /// Get edge weight
@@ -251,10 +248,22 @@ namespace GraphWinForms
         /// <returns>Edge weight</returns>
         public int GetEdgeWeight(string firstVertexName, string secondVertexName)
         {
-            GraphEdge FirstEdge, SecondEdge;
-            FindEdge(firstVertexName, secondVertexName, out FirstEdge, out SecondEdge);
-            if (FirstEdge != null) return FirstEdge.EdgeWeight;
-            if (SecondEdge != null) return SecondEdge.EdgeWeight;
+            var edges = FindEdge(firstVertexName, secondVertexName);
+            if (edges.FirstEdge != null) return edges.FirstEdge.EdgeWeight;
+            if (edges.SecondEdge != null) return edges.SecondEdge.EdgeWeight;
+            return 0;
+        }
+        /// <summary>
+        /// Get edge length
+        /// </summary>
+        /// <param name="firstVertexName">First vertex name</param>
+        /// <param name="secondVertexName">Second vertex name</param>
+        /// <returns>Edge length</returns>
+        public int GetEdgeLength(string firstVertexName, string secondVertexName)
+        {
+            var edges = FindEdge(firstVertexName, secondVertexName);
+            if (edges.FirstEdge != null) return edges.FirstEdge.EdgeLength;
+            if (edges.SecondEdge != null) return edges.SecondEdge.EdgeLength;
             return 0;
         }
         /// <summary>
@@ -319,10 +328,9 @@ namespace GraphWinForms
         /// <param name="length">Edge length</param>
         public void EditEdge(string firstVertexName, string secondVertexName, int weight, int length)
         {
-            GraphEdge FirstEdge, SecondEdge;
-            FindEdge(firstVertexName, secondVertexName, out FirstEdge, out SecondEdge);
-            if (FirstEdge != null) { FirstEdge.SetWeight(weight); FirstEdge.SetLength(length); }
-            if (SecondEdge != null) { SecondEdge.SetWeight(weight); SecondEdge.SetLength(length); }
+            var edges = FindEdge(firstVertexName, secondVertexName);
+            if (edges.FirstEdge != null) { edges.FirstEdge.SetWeight(weight); edges.FirstEdge.SetLength(length); }
+            if (edges.SecondEdge != null) { edges.SecondEdge.SetWeight(weight); edges.SecondEdge.SetLength(length); }
             Sort();
         }
         /// <summary>
@@ -334,13 +342,12 @@ namespace GraphWinForms
         {
             var FirstVertex = FindVertex(firstVertexName);
             var SecondVertex = FindVertex(secondVertexName);
-            GraphEdge FirstEdge, SecondEdge;
-            FindEdge(firstVertexName, secondVertexName, out FirstEdge, out SecondEdge);
+            var edges = FindEdge(firstVertexName, secondVertexName);
             
             if (FirstVertex != null && SecondVertex != null)
             {
-                if (FirstEdge != null) FirstVertex.RemoveEdge(FirstEdge);
-                if (SecondEdge != null) SecondVertex.RemoveEdge(SecondEdge);
+                if (edges.FirstEdge != null) FirstVertex.RemoveEdge(edges.FirstEdge);
+                if (edges.SecondEdge != null) SecondVertex.RemoveEdge(edges.SecondEdge);
                 Sort(SortType.Ascending);
             }
         }

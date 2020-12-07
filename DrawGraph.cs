@@ -33,7 +33,7 @@ namespace GraphWinForms
         /// </summary>
         /// <param name="formHandler">Base application form handler</param>
         /// <param name="args">Console arguments</param>
-        public static void SetFormHandler(Form1 formHandler, string[] args)
+        public static void Initialize(Form1 formHandler, string[] args)
         { 
             FormHandler = formHandler;
             DisplayList.SetDisplayHandler(formHandler.listBox1);
@@ -344,7 +344,7 @@ namespace GraphWinForms
                                 stopwatch.Start();
                                 var path = DrawGraph.LocalGraph.FindShortestPath(firstVertexName, secondVertexName);
                                 stopwatch.Stop();
-                                Task.Run(() => { MessageBox.Show(stopwatch.Elapsed.TotalMilliseconds.ToString(), "Алгоритм Дейкстры"); });
+                                //Task.Run(() => { MessageBox.Show(stopwatch.Elapsed.TotalMilliseconds.ToString(), "Алгоритм Дейкстры"); });
 
                                 DisplayList.AddItem(path);
 
@@ -468,7 +468,7 @@ namespace GraphWinForms
                                 stopwatch.Start();
                                 var path = DrawGraph.LocalGraph.FindShortestPath(firstVertexName, secondVertexName);
                                 stopwatch.Stop();
-                                Task.Run(() => { MessageBox.Show((stopwatch.Elapsed.TotalMilliseconds * Utils.Rand(1.5, 2)).ToString(), "Алгоритм Баллмана-Форда"); });
+                                //Task.Run(() => { MessageBox.Show((stopwatch.Elapsed.TotalMilliseconds * Utils.Rand(1.5, 2)).ToString(), "Алгоритм Баллмана-Форда"); });
 
                                 DisplayList.AddItem(path);
 
@@ -487,7 +487,7 @@ namespace GraphWinForms
     /// <summary>
     /// Graphic vertex class
     /// </summary>
-    public class Vertex
+    public class Vertex : IEquatable<Vertex>
     {
         /// <summary>
         /// X coordinate
@@ -635,7 +635,7 @@ namespace GraphWinForms
         /// <param name="secondVertex">Second vertex that current edge basing on</param>
         /// <param name="weight">Edge weight</param>
         /// <param name="length">Edge length</param>
-        public Edge (Vertex firstVertex, Vertex secondVertex, int weight, int length)
+        public Edge(Vertex firstVertex, Vertex secondVertex, int weight, int length)
         {
             this.FirstVertex = firstVertex;
             this.SecondVertex = secondVertex;
